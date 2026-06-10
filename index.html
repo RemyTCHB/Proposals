@@ -38,14 +38,12 @@
         }
         .shake-element { animation: shake 0.4s ease-in-out; }
 
-        /* TIGHTER MOUSE GLOW (4 GRID BOXES = 220px) */
         #mouseGlow {
             position: fixed; inset: 0; pointer-events: none; z-index: 1;
             background: radial-gradient(220px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh), rgba(79,70,229,0.15) 0%, rgba(16,185,129,0.08) 40%, rgba(220,38,38,0.02) 60%, transparent 80%);
             opacity: 0; transition: opacity 0.5s ease; mix-blend-mode: screen;
         }
         
-        /* FIXED CUSTOM CURSOR */
         body, a, button, input, [onclick], .cursor-pointer, .cursor-not-allowed { cursor: none !important; }
         
         #cursor-dot { position: fixed; top: 0; left: 0; width: 6px; height: 6px; background: white; border-radius: 50%; pointer-events: none; z-index: 999999; transform: translate(-50%, -50%); transition: transform 0.15s ease-out, background-color 0.2s; opacity: 0; }
@@ -56,11 +54,9 @@
         body.cursor-hover #cursor-ring { width: 56px; height: 56px; background-color: rgba(79, 70, 229, 0.1); border-color: rgba(220, 38, 38, 0.8); }
         body.cursor-hover #cursor-dot { transform: translate(-50%, -50%) scale(1.5); background: #10b981; }
 
-        /* LOCKED CUSTOM CURSOR */
         body.cursor-locked #cursor-ring { width: 44px; height: 44px; background-color: rgba(220, 38, 38, 0.1); border-color: rgba(220, 38, 38, 0.8); border-style: dashed; }
         body.cursor-locked #cursor-dot { transform: translate(-50%, -50%) scale(1.2); background: #dc2626; }
 
-        /* HORIZONTAL ANIMATED TEXT GRADIENT */
         .animate-text-gradient {
             background: linear-gradient(to right, #4f46e5, #10b981, #dc2626, #10b981, #4f46e5);
             background-size: 300% 100%;
@@ -78,12 +74,10 @@
 </head>
 <body class="bg-brand-dark min-h-screen font-sans antialiased relative">
 
-    <!-- Ambient Mouse Flashlight & Custom Cursor -->
     <div id="mouseGlow"></div>
     <div id="cursor-dot"></div>
     <div id="cursor-ring"></div>
 
-    <!-- Webhooks / API -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwUPnhj0leETYDP86FpvOOtsyF1Oqa8GgcBm-spsX9xcLvQE2F4LDnjR7IUUsbpw7uQ/exec";
         const LOGGING_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbw5XeS-cpbP8vBrdCM32ZR5cK3kxf66TpdVC8NyWNK4HbYqxh8eWFqN0U0xss8zuWZq/exec";
@@ -91,6 +85,17 @@
         let activePropertyId = null;
         let authStep = 1;
         let expectedOTP = null;
+
+        // Unified Webhook Function (Safe for Cross-Origin Google Apps Script)
+        function sendWebhookEvent(payload) {
+            if (!LOGGING_WEBHOOK_URL) return;
+            fetch(LOGGING_WEBHOOK_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Tells browser not to enforce strict preflight
+                headers: { 'Content-Type': 'text/plain' }, // Safe content-type accepted by Google
+                body: JSON.stringify(payload)
+            }).catch(err => console.log("Webhook sync error"));
+        }
     </script>
 
     <canvas id="gridCanvas" class="fixed inset-0 w-full h-full -z-10" style="pointer-events: none;"></canvas>
@@ -108,7 +113,6 @@
                 <p class="text-xs text-gray-400">Please Verify Identity & Enter Access Key</p>
             </div>
             
-            <!-- OTP 2-Step Form -->
             <div id="step1Container" class="space-y-4">
                 <input type="email" id="emailInput" placeholder="Email Address" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                 <input type="password" id="accessKeyInput" placeholder="Access Key" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
@@ -131,7 +135,6 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         <header class="text-center mb-16">
             <div class="inline-flex justify-center items-center mb-6 w-full">
-                <!-- LOGO NO FALLBACK -->
                 <img src="logo.svg" alt="Total Cash Home Buyers" class="h-24 md:h-28 w-auto drop-shadow-2xl hover:scale-105 transition-transform duration-300 object-contain" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
             </div>
             <p class="text-sm font-semibold tracking-[0.2em] text-indigo-400 uppercase mb-2">Investor Network</p>
@@ -149,13 +152,10 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="propertyGrid">
-            <!-- Dynamic Cards Will Inject Here -->
         </div>
 
-        <!-- UNIFIED FOOTER -->
         <footer class="mt-24 text-center border-t border-white/10 pt-8 pb-12 flex flex-col items-center gap-2">
             <div class="flex items-center justify-center gap-2 mb-2">
-                <!-- ICON NO FALLBACK -->
                 <img class="w-6 h-6 opacity-50" src="icon.svg" alt="TCHB Icon">
                 <span class="font-bold text-gray-400 text-xs">TOTAL CASH HOME BUYERS</span> <span class="text-gray-500 text-xs">•</span> <span class="text-gray-500 text-xs">Investor Network</span>
             </div>
@@ -176,9 +176,6 @@
     </div>
 
     <script>
-        // ----------------------------------------------------
-        // THEME MAPPERS
-        // ----------------------------------------------------
         function getStatusTheme(status) {
             const s = (status || '').toUpperCase();
             if (s === 'SOLD') return { bg: 'bg-brand-crimson/10', text: 'text-brand-crimson', border: 'border-brand-crimson/20', dot: '🔴', label: 'Sold / Closed', locked: true };
@@ -186,7 +183,6 @@
             return { bg: 'bg-brand-emerald/10', text: 'text-brand-emerald', border: 'border-brand-emerald/20', dot: '🟢', label: 'Available', locked: false };
         }
 
-        // Updated with individual btnHover classes per deal type
         function getDealTheme(type) {
             const t = (type || '').toLowerCase();
             if (t === 'creative') return { class: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20', halo: 'rgba(79,70,229,0.15)', glow: 'border-t-indigo-500', btnHover: 'hover:bg-indigo-600 hover:border-indigo-500', label: 'Subject-To / Creative' };
@@ -198,9 +194,6 @@
             return { class: 'text-gray-400 bg-gray-500/10 border-gray-500/20', halo: 'rgba(156,163,175,0.15)', glow: 'border-t-gray-500', btnHover: 'hover:bg-gray-600 hover:border-gray-500', label: 'Investment Deal' };
         }
 
-        // ----------------------------------------------------
-        // LOAD LIVE GOOGLE SHEET DATA
-        // ----------------------------------------------------
         async function loadProperties() {
             try {
                 const response = await fetch(API_URL);
@@ -230,18 +223,14 @@
                 const deal = getDealTheme(prop.Deal_Type);
                 const isLocked = status.locked;
                 
-                // Both active and locked cards get hover animations. Removed grayscale and opacity constraints.
                 const cardStateClass = "transition-all duration-500 hover:-translate-y-1";
                 const dynamicHoverHalo = `onmouseover="this.style.boxShadow='0 20px 40px ${deal.halo}'" onmouseout="this.style.boxShadow='none'"`;
                 
-                // Added cursor-not-allowed / cursor-pointer explicitly to the button
                 const btnStateClass = isLocked ? "bg-gray-800 text-gray-500 border border-gray-700 cursor-not-allowed" : `bg-white/5 text-white border border-white/10 shadow-lg ${deal.btnHover} cursor-pointer`;
                 const btnText = isLocked ? "Locked" : "View Proposal &rarr;";
                 
-                // Click handler will be bound to the button instead of the wrapper
                 const clickHandler = isLocked ? "" : `onclick="openModal('${prop.Property_ID}')"`;
 
-                // Removed clickHandler from the outer div, placed it on the <button>
                 const cardHTML = `
                     <div class="bg-brand-card backdrop-blur-xl border-t-2 ${deal.glow} border-x border-b border-gray-800 rounded-2xl p-6 flex flex-col ${cardStateClass}" ${dynamicHoverHalo}>
                         <div class="flex justify-between items-start mb-4">
@@ -276,9 +265,6 @@
             });
         }
 
-        // ----------------------------------------------------
-        // GATE MODAL & OTP SECURITY
-        // ----------------------------------------------------
         function openModal(id) {
             activePropertyId = id;
             authStep = 1;
@@ -298,10 +284,8 @@
             activePropertyId = null;
         }
 
-        // --- SIMPLE EMAIL VALIDATION (Replaced strict corporate blocker) ---
         function isValidEmail(email) {
             if (!email) return false;
-            // Just checks if it looks like a standard email: text@text.xyz
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.toLowerCase().trim());
         }
 
@@ -324,7 +308,6 @@
             if (authStep === 1) {
                 const inputVal = document.getElementById('accessKeyInput').value.trim();
 
-                // Using the new simple validation
                 if (!isValidEmail(emailVal)) {
                     showError("Please enter a valid email address.");
                     return;
@@ -334,7 +317,7 @@
                     return;
                 }
 
-                // Step 1 Passed - Generate OTP and trigger email via Apps Script
+                // Generates OTP and Triggers Webhook Fire-and-Forget
                 expectedOTP = Math.floor(100000 + Math.random() * 900000).toString();
                 
                 const originalText = btn.innerText;
@@ -342,20 +325,15 @@
                 btn.classList.add('opacity-75', 'cursor-not-allowed');
                 btn.disabled = true;
 
-                if (typeof LOGGING_WEBHOOK_URL !== 'undefined' && LOGGING_WEBHOOK_URL) {
-                    try {
-                        // We use mode: no-cors because it's a cross-origin post. It sends fire-and-forget.
-                        await fetch(LOGGING_WEBHOOK_URL, {
-                            method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                            body: JSON.stringify({ 
-                                action: 'send_otp', timestamp: Date.now(), email: emailVal, 
-                                otp: expectedOTP, propertyId: prop.Property_ID 
-                            })
-                        });
-                    } catch(e) { console.log("OTP Webhook silent fail"); }
-                }
+                sendWebhookEvent({ 
+                    action: 'send_otp', 
+                    timestamp: Date.now(), 
+                    email: emailVal, 
+                    otp: expectedOTP, 
+                    propertyId: prop.Property_ID 
+                });
 
-                // Transition to Step 2
+                // Smoothly Transition
                 setTimeout(() => {
                     authStep = 2;
                     document.getElementById('step1Container').classList.add('hidden');
@@ -365,7 +343,7 @@
                     btn.classList.remove('opacity-75', 'cursor-not-allowed');
                     btn.disabled = false;
                     document.getElementById('otpInput').focus();
-                }, 500); // slight delay for UX
+                }, 500);
 
             } else if (authStep === 2) {
                 const userOTP = document.getElementById('otpInput').value.trim();
@@ -375,7 +353,6 @@
                     return;
                 }
 
-                // OTP Verified Successfully!
                 document.getElementById('errorMessage').classList.add('hidden');
                 const lockIcon = document.getElementById('lockIcon');
                 sessionStorage.setItem('tchb_access_granted_' + prop.Property_ID, 'true');
@@ -387,28 +364,26 @@
                 btn.innerText = "Access Granted...";
                 btn.classList.replace("bg-indigo-600", "bg-brand-emerald");
 
-                // Log successful final access
-                if (typeof LOGGING_WEBHOOK_URL !== 'undefined' && LOGGING_WEBHOOK_URL) {
-                    fetch(LOGGING_WEBHOOK_URL, {
-                        method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'log_access', timestamp: Date.now(), email: emailVal, propertyId: prop.Property_ID, status: "SUCCESS_OTP", reason: "Verified Email" })
-                    }).catch(e => {});
-                }
+                // Log final access success
+                sendWebhookEvent({ 
+                    action: 'log_access', 
+                    timestamp: Date.now(), 
+                    email: emailVal, 
+                    propertyId: prop.Property_ID, 
+                    status: "SUCCESS_OTP", 
+                    reason: "Verified Email" 
+                });
 
                 setTimeout(() => { window.location.href = `proposal.html?id=${prop.Property_ID}`; }, 800);
             }
         }
 
-        // ----------------------------------------------------
-        // ANIMATION ENGINE & MOUSE GLOW
-        // ----------------------------------------------------
         const canvas = document.getElementById('gridCanvas');
         const ctx = canvas.getContext('2d');
         let gridSize = 55; let sparks = []; let lastSpanSpawn = 0;
         let lastInteractionTime = Date.now(); 
         const brandColors = [{ r: 79, g: 70, b: 229 }, { r: 220, g: 38, b: 38 }, { r: 16, g: 185, b: 129 }];
 
-        // Custom Cursor Variables
         let customMouseX = window.innerWidth / 2;
         let customMouseY = window.innerHeight / 2;
         let ringX = customMouseX;
