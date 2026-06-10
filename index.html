@@ -89,6 +89,8 @@
         const LOGGING_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbw5XeS-cpbP8vBrdCM32ZR5cK3kxf66TpdVC8NyWNK4HbYqxh8eWFqN0U0xss8zuWZq/exec";
         let globalProperties = [];
         let activePropertyId = null;
+        let authStep = 1;
+        let expectedOTP = null;
     </script>
 
     <canvas id="gridCanvas" class="fixed inset-0 w-full h-full -z-10" style="pointer-events: none;"></canvas>
@@ -105,14 +107,24 @@
                 <h3 class="text-xl font-bold text-white mb-1">Verification Required</h3>
                 <p class="text-xs text-gray-400">Please verify identity and enter specialized key</p>
             </div>
-            <div class="space-y-4">
+            
+            <!-- OTP 2-Step Form -->
+            <div id="step1Container" class="space-y-4">
                 <input type="email" id="emailInput" placeholder="Email Address" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                 <input type="password" id="accessKeyInput" placeholder="Access Key" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
-                <p id="errorMessage" class="text-xs text-brand-crimson font-medium text-center hidden">Incorrect security authorization code.</p>
-                <button onclick="verifyKey()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
-                    Unlock Proposal
-                </button>
             </div>
+
+            <div id="step2Container" class="space-y-4 hidden mt-2">
+                <p class="text-xs text-brand-emerald text-center font-medium mb-4">A 6-digit verification code has been sent to your email.</p>
+                <input type="text" id="otpInput" placeholder="000000" maxlength="6" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-brand-emerald transition-all">
+                <button onclick="authStep = 1; document.getElementById('step2Container').classList.add('hidden'); document.getElementById('step1Container').classList.remove('hidden'); document.getElementById('authButton').innerText = 'Send Verification Code'; document.getElementById('errorMessage').classList.add('hidden');" class="text-xs text-gray-500 hover:text-white w-full text-center mt-2 transition-colors">← Back to edit email</button>
+            </div>
+
+            <p id="errorMessage" class="text-xs text-brand-crimson font-medium text-center hidden mt-4">Incorrect security authorization code.</p>
+            
+            <button id="authButton" onclick="handleAuthStep()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 mt-4">
+                Send Verification Code
+            </button>
         </div>
     </div>
 
@@ -218,18 +230,18 @@
                 const deal = getDealTheme(prop.Deal_Type);
                 const isLocked = status.locked;
                 
-                // 1. Both active and locked cards get hover animations. Removed grayscale and opacity constraints.
+                // Both active and locked cards get hover animations. Removed grayscale and opacity constraints.
                 const cardStateClass = "transition-all duration-500 hover:-translate-y-1";
                 const dynamicHoverHalo = `onmouseover="this.style.boxShadow='0 20px 40px ${deal.halo}'" onmouseout="this.style.boxShadow='none'"`;
                 
-                // 2. Added cursor-not-allowed / cursor-pointer explicitly to the button
+                // Added cursor-not-allowed / cursor-pointer explicitly to the button
                 const btnStateClass = isLocked ? "bg-gray-800 text-gray-500 border border-gray-700 cursor-not-allowed" : `bg-white/5 text-white border border-white/10 shadow-lg ${deal.btnHover} cursor-pointer`;
                 const btnText = isLocked ? "Locked" : "View Proposal &rarr;";
                 
-                // 3. Click handler will be bound to the button instead of the wrapper
+                // Click handler will be bound to the button instead of the wrapper
                 const clickHandler = isLocked ? "" : `onclick="openModal('${prop.Property_ID}')"`;
 
-                // 4. Removed clickHandler from the outer div, placed it on the <button>
+                // Removed clickHandler from the outer div, placed it on the <button>
                 const cardHTML = `
                     <div class="bg-brand-card backdrop-blur-xl border-t-2 ${deal.glow} border-x border-b border-gray-800 rounded-2xl p-6 flex flex-col ${cardStateClass}" ${dynamicHoverHalo}>
                         <div class="flex justify-between items-start mb-4">
@@ -265,14 +277,19 @@
         }
 
         // ----------------------------------------------------
-        // GATE MODAL & SECURITY
+        // GATE MODAL & OTP SECURITY
         // ----------------------------------------------------
         function openModal(id) {
             activePropertyId = id;
+            authStep = 1;
             document.getElementById('authModal').classList.remove('hidden');
+            document.getElementById('step1Container').classList.remove('hidden');
+            document.getElementById('step2Container').classList.add('hidden');
             document.getElementById('emailInput').value = '';
             document.getElementById('accessKeyInput').value = '';
+            document.getElementById('otpInput').value = '';
             document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('authButton').innerText = "Send Verification Code";
             document.getElementById('emailInput').focus();
         }
 
@@ -281,75 +298,104 @@
             activePropertyId = null;
         }
 
-        // --- EMAIL VALIDATION RULESET ---
-        function isValidCorporateEmail(email) {
+        // --- SIMPLE EMAIL VALIDATION (Replaced strict corporate blocker) ---
+        function isValidEmail(email) {
             if (!email) return false;
-            email = email.toLowerCase().trim();
-            
-            // 1. Basic structural validation (Requires text@text.xyz format)
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
-            
-            const [localPart, domain] = email.split('@');
-            
-            // 2. Block disposable / test domains
-            const blockedDomains = ['test.com', 'example.com', 'mailinator.com', 'yopmail.com', '10minutemail.com', 'tempmail.com', 'guerrillamail.com', 'fake.com', 'email.com'];
-            if (blockedDomains.some(d => domain === d || domain.endsWith('.' + d))) return false;
-            
-            // 3. Block common fake prefixes
-            const blockedPrefixes = ['test', 'fake', 'demo', 'spam', 'admin', 'nobody', '1234', '12345', 'user'];
-            if (blockedPrefixes.includes(localPart)) return false;
-
-            return true;
+            // Just checks if it looks like a standard email: text@text.xyz
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.toLowerCase().trim());
         }
 
-        function verifyKey() {
-            const prop = globalProperties.find(p => p.Property_ID === activePropertyId);
-            const emailInput = document.getElementById('emailInput');
-            const emailVal = emailInput ? emailInput.value.trim() : "Unknown";
-            const inputVal = document.getElementById('accessKeyInput').value.trim();
+        function showError(msg) {
+            const errorElement = document.getElementById('errorMessage');
             const modalBox = document.getElementById('modalBox');
-            const errorMsg = document.getElementById('errorMessage');
+            errorElement.innerText = msg;
+            errorElement.classList.remove('hidden');
+            modalBox.classList.add('shake-element');
+            setTimeout(() => { modalBox.classList.remove('shake-element'); }, 400);
+        }
 
+        async function handleAuthStep() {
+            const prop = globalProperties.find(p => p.Property_ID === activePropertyId);
             if (!prop) return;
 
-            let attemptStatus = "FAILED";
-            let attemptReason = "Unknown Error";
-            let isAuthorized = false;
+            const emailVal = document.getElementById('emailInput').value.trim();
+            const btn = document.getElementById('authButton');
 
-            if (!isValidCorporateEmail(emailVal)) {
-                attemptReason = "Invalid or Test Email";
-                errorMsg.innerText = "Please enter a valid, verifiable email address.";
-            } else if (inputVal !== prop.Access_Password) {
-                attemptReason = "Incorrect Security Key";
-                errorMsg.innerText = "Incorrect security authorization code. Please try again.";
-            } else {
-                attemptStatus = "SUCCESS";
-                attemptReason = "Valid Credentials";
-                isAuthorized = true;
-            }
+            if (authStep === 1) {
+                const inputVal = document.getElementById('accessKeyInput').value.trim();
 
-            if (typeof LOGGING_WEBHOOK_URL !== 'undefined' && LOGGING_WEBHOOK_URL) {
-                fetch(LOGGING_WEBHOOK_URL, {
-                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'log_access', timestamp: Date.now(), email: emailVal, propertyId: prop.Property_ID, keyUsed: inputVal, status: attemptStatus, reason: attemptReason })
-                }).catch(err => console.log("Logging silently failed", err));
-            }
+                // Using the new simple validation
+                if (!isValidEmail(emailVal)) {
+                    showError("Please enter a valid email address.");
+                    return;
+                }
+                if (inputVal !== prop.Access_Password) {
+                    showError("Incorrect security authorization code. Please try again.");
+                    return;
+                }
 
-            if (isAuthorized) {
-                errorMsg.classList.add('hidden');
+                // Step 1 Passed - Generate OTP and trigger email via Apps Script
+                expectedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+                
+                const originalText = btn.innerText;
+                btn.innerText = "Sending code...";
+                btn.classList.add('opacity-75', 'cursor-not-allowed');
+                btn.disabled = true;
+
+                if (typeof LOGGING_WEBHOOK_URL !== 'undefined' && LOGGING_WEBHOOK_URL) {
+                    try {
+                        // We use mode: no-cors because it's a cross-origin post. It sends fire-and-forget.
+                        await fetch(LOGGING_WEBHOOK_URL, {
+                            method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                action: 'send_otp', timestamp: Date.now(), email: emailVal, 
+                                otp: expectedOTP, propertyId: prop.Property_ID 
+                            })
+                        });
+                    } catch(e) { console.log("OTP Webhook silent fail"); }
+                }
+
+                // Transition to Step 2
+                setTimeout(() => {
+                    authStep = 2;
+                    document.getElementById('step1Container').classList.add('hidden');
+                    document.getElementById('step2Container').classList.remove('hidden');
+                    document.getElementById('errorMessage').classList.add('hidden');
+                    btn.innerText = "Verify & Unlock Proposal";
+                    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                    btn.disabled = false;
+                    document.getElementById('otpInput').focus();
+                }, 500); // slight delay for UX
+
+            } else if (authStep === 2) {
+                const userOTP = document.getElementById('otpInput').value.trim();
+                
+                if (userOTP !== expectedOTP) {
+                    showError("Incorrect verification code. Try again.");
+                    return;
+                }
+
+                // OTP Verified Successfully!
+                document.getElementById('errorMessage').classList.add('hidden');
                 const lockIcon = document.getElementById('lockIcon');
                 sessionStorage.setItem('tchb_access_granted_' + prop.Property_ID, 'true');
                 
-                lockIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>';
+                lockIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>';
                 lockIcon.className = "w-8 h-8 text-brand-emerald transition-all duration-300 scale-110";
                 document.getElementById('lockIconContainer').className = "mx-auto w-16 h-16 rounded-full bg-brand-emerald/10 flex items-center justify-center border border-brand-emerald/20 mb-4 animate-bounce";
 
+                btn.innerText = "Access Granted...";
+                btn.classList.replace("bg-indigo-600", "bg-brand-emerald");
+
+                // Log successful final access
+                if (typeof LOGGING_WEBHOOK_URL !== 'undefined' && LOGGING_WEBHOOK_URL) {
+                    fetch(LOGGING_WEBHOOK_URL, {
+                        method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'log_access', timestamp: Date.now(), email: emailVal, propertyId: prop.Property_ID, status: "SUCCESS_OTP", reason: "Verified Email" })
+                    }).catch(e => {});
+                }
+
                 setTimeout(() => { window.location.href = `proposal.html?id=${prop.Property_ID}`; }, 800);
-            } else {
-                errorMsg.classList.remove('hidden');
-                modalBox.classList.add('shake-element');
-                document.getElementById(emailVal && emailVal.includes('@') ? 'accessKeyInput' : 'emailInput').focus();
-                setTimeout(() => { modalBox.classList.remove('shake-element'); }, 400);
             }
         }
 
@@ -376,7 +422,6 @@
             const isHorizontal = Math.random() > 0.5;
             let startX, startY, dirX, dirY;
             if (isClick && x !== null && y !== null) {
-                // FORCE SNAP TO NEAREST GRIDLINE CORNER
                 startX = Math.round(x / gridSize) * gridSize; 
                 startY = Math.round(y / gridSize) * gridSize;
                 dirX = isHorizontal ? (Math.random() > 0.5 ? 1 : -1) : 0; dirY = isHorizontal ? 0 : (Math.random() > 0.5 ? 1 : -1);
@@ -393,7 +438,6 @@
             sparks.push({ startX, startY, targetX: startX + dirX * gridSize, targetY: startY + dirY * gridSize, dirX, dirY, progress: 0, speed: 0.02 + Math.random() * 0.03, life: 1, decay: 0.005 + Math.random() * 0.01, history: [], color: color });
         }
 
-        // Click logic
         document.addEventListener('mousedown', (e) => { 
             lastInteractionTime = Date.now();
             for(let i=0; i<3; i++) createSpark(e.clientX, e.clientY, true); 
@@ -405,9 +449,8 @@
             }
         });
 
-        // Mouse tracking
         document.addEventListener('mousemove', (e) => {
-            document.body.classList.add('mouse-active'); // Make cursor visible on first move
+            document.body.classList.add('mouse-active');
             customMouseX = e.clientX;
             customMouseY = e.clientY;
 
@@ -466,7 +509,6 @@
             for (let y = 0; y < canvas.height; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); }
             ctx.stroke();
 
-            // Cursor smoothing
             ringX += (customMouseX - ringX) * 0.15;
             ringY += (customMouseY - ringY) * 0.15;
             const ring = document.getElementById('cursor-ring');
