@@ -101,7 +101,8 @@
       <header class="flex flex-col md:flex-row justify-between items-center pb-8 border-b border-gray-800 gap-6">
         <div class="flex items-center gap-4">
           <a href="../" class="flex items-center hover:opacity-90 active:scale-95 duration-150 transition-all">
-            <img src="https://i.postimg.cc/9zn5PrgX/TCHB-LOGO.png" alt="Total Cash Home Buyers Logo" class="h-16 md:h-20 w-auto object-contain">
+            <!-- LOGO CLARITY UPDATE -->
+            <img src="https://i.postimg.cc/9zn5PrgX/TCHB-LOGO.png" alt="Total Cash Home Buyers Logo" class="h-16 md:h-20 w-auto object-contain" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
           </a>
         </div>
         <div class="text-right flex flex-col items-center md:items-end">
@@ -580,6 +581,7 @@
     const canvas = document.getElementById('gridCanvas');
     const ctx = canvas.getContext('2d');
     let gridSize = 55; let sparks = []; let lastSpanSpawn = 0;
+    let lastInteractionTime = Date.now(); // AUTO SPARK IDLE TIMER
     const brandColors = [{ r: 79, g: 70, b: 229 }, { r: 220, g: 38, b: 38 }, { r: 16, g: 185, b: 129 }];
 
     function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -604,7 +606,11 @@
         sparks.push({ startX, startY, targetX: startX + dirX * gridSize, targetY: startY + dirY * gridSize, dirX, dirY, progress: 0, speed: 0.02 + Math.random() * 0.03, life: 1, decay: 0.005 + Math.random() * 0.01, history: [], color: color });
     }
 
-    canvas.addEventListener('mousedown', (e) => { for(let i=0; i<3; i++) createSpark(e.clientX, e.clientY, true); });
+    // ON CLICK ACTION (Spawns sparks & resets idle timer)
+    canvas.addEventListener('mousedown', (e) => { 
+        lastInteractionTime = Date.now();
+        for(let i=0; i<3; i++) createSpark(e.clientX, e.clientY, true); 
+    });
 
     function drawSparks() {
         ctx.lineCap = 'round';
@@ -634,7 +640,14 @@
         ctx.stroke();
 
         drawSparks();
-        if (timestamp - lastSpanSpawn > 500 && sparks.length < 32) { createSpark(); lastSpanSpawn = timestamp; }
+        
+        // AUTO SPARK CHECK (Only spawn if 5 seconds have passed without a click)
+        if (Date.now() - lastInteractionTime > 5000) {
+            if (timestamp - lastSpanSpawn > 500 && sparks.length < 32) { 
+                createSpark(); 
+                lastSpanSpawn = timestamp; 
+            }
+        }
 
         for (let i = sparks.length - 1; i >= 0; i--) {
             let spark = sparks[i]; spark.progress += spark.speed; spark.life -= spark.decay;
