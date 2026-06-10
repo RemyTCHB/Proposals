@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TCHB Property Portal</title>
-    <link rel="icon" type="image/png" href="https://i.postimg.cc/47YwXN6z/TCHB-ICON-1-white.png">
+    <link rel="icon" type="image/png" href="./icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -37,9 +37,17 @@
             20%, 40%, 60%, 80% { transform: translateX(6px); }
         }
         .shake-element { animation: shake 0.4s ease-in-out; }
+        
+        #mouseGlow {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1;
+            background: radial-gradient(800px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh), rgba(79,70,229,0.12) 0%, rgba(16,185,129,0.06) 40%, rgba(220,38,38,0.02) 60%, transparent 80%);
+            opacity: 0; transition: opacity 0.5s ease; mix-blend-mode: screen;
+        }
     </style>
 </head>
 <body class="bg-brand-dark min-h-screen font-sans antialiased relative">
+    
+    <div id="mouseGlow"></div>
 
     <!-- Webhooks / API -->
     <script>
@@ -78,7 +86,7 @@
         <header class="text-center mb-16">
             <div class="inline-flex justify-center items-center mb-6 w-full">
                 <!-- LOGO CLARITY UPDATE -->
-                <img src="https://i.postimg.cc/9zn5PrgX/TCHB-LOGO.png" alt="Total Cash Home Buyers" class="h-24 md:h-28 w-auto drop-shadow-2xl hover:scale-105 transition-transform duration-300 object-contain" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
+                <img src="./logo.svg" alt="Total Cash Home Buyers" class="h-24 md:h-28 w-auto drop-shadow-2xl hover:scale-105 transition-transform duration-300 object-contain">
             </div>
             <p class="text-sm font-semibold tracking-[0.2em] text-indigo-400 uppercase mb-2">Investor Network</p>
             <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
@@ -101,7 +109,7 @@
         <!-- UNIFIED FOOTER UPDATE WITH ICONS -->
         <footer class="mt-24 text-center border-t border-white/10 pt-8 pb-12 flex flex-col items-center gap-2">
             <div class="flex items-center justify-center gap-2 mb-2">
-                <img class="w-6 h-6 opacity-50" src="https://i.postimg.cc/47YwXN6z/TCHB-ICON-1-white.png" alt="TCHB Icon">
+                <img class="w-6 h-6 opacity-50" src="./icon.png" alt="TCHB Icon">
                 <span class="font-bold text-gray-400 text-xs">TOTAL CASH HOME BUYERS</span> <span class="text-gray-500 text-xs">•</span> <span class="text-gray-500 text-xs">Investor Network</span>
             </div>
             <div class="flex flex-wrap gap-4 justify-center items-center text-xs mt-1 mb-4 text-gray-400">
@@ -133,13 +141,13 @@
 
         function getDealTheme(type) {
             const t = (type || '').toLowerCase();
-            if (t === 'creative') return { class: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20', glow: 'border-t-indigo-500', label: 'Subject-To / Creative' };
-            if (t === 'wholesale') return { class: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', glow: 'border-t-emerald-500', label: 'Wholesale' };
-            if (t === 'fix_flip') return { class: 'text-blue-400 bg-blue-500/10 border-blue-500/20', glow: 'border-t-blue-500', label: 'Fix & Flip' };
-            if (t === 'novation') return { class: 'text-amber-400 bg-amber-500/10 border-amber-500/20', glow: 'border-t-amber-500', label: 'Novation JV' };
-            if (t === 'seller_finance') return { class: 'text-purple-400 bg-purple-500/10 border-purple-500/20', glow: 'border-t-purple-500', label: 'Seller Financed' };
-            if (t === 'rental') return { class: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20', glow: 'border-t-cyan-500', label: 'Turnkey / Rental' };
-            return { class: 'text-gray-400 bg-gray-500/10 border-gray-500/20', glow: 'border-t-gray-500', label: 'Investment Deal' };
+            if (t === 'creative') return { class: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20', glow: 'border-t-indigo-500', halo: 'hover:shadow-[0_0_40px_rgba(79,70,229,0.4)]', label: 'Subject-To / Creative' };
+            if (t === 'wholesale') return { class: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', glow: 'border-t-emerald-500', halo: 'hover:shadow-[0_0_40px_rgba(16,185,129,0.4)]', label: 'Wholesale' };
+            if (t === 'fix_flip') return { class: 'text-blue-400 bg-blue-500/10 border-blue-500/20', glow: 'border-t-blue-500', halo: 'hover:shadow-[0_0_40px_rgba(59,130,246,0.4)]', label: 'Fix & Flip' };
+            if (t === 'novation') return { class: 'text-amber-400 bg-amber-500/10 border-amber-500/20', glow: 'border-t-amber-500', halo: 'hover:shadow-[0_0_40px_rgba(245,158,11,0.4)]', label: 'Novation JV' };
+            if (t === 'seller_finance') return { class: 'text-purple-400 bg-purple-500/10 border-purple-500/20', glow: 'border-t-purple-500', halo: 'hover:shadow-[0_0_40px_rgba(168,85,247,0.4)]', label: 'Seller Financed' };
+            if (t === 'rental') return { class: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20', glow: 'border-t-cyan-500', halo: 'hover:shadow-[0_0_40px_rgba(6,182,212,0.4)]', label: 'Turnkey / Rental' };
+            return { class: 'text-gray-400 bg-gray-500/10 border-gray-500/20', glow: 'border-t-gray-500', halo: 'hover:shadow-[0_0_40px_rgba(156,163,175,0.4)]', label: 'Investment Deal' };
         }
 
         // ----------------------------------------------------
@@ -174,7 +182,8 @@
                 const deal = getDealTheme(prop.Deal_Type);
                 const isLocked = status.locked;
                 
-                const cardStateClass = isLocked ? "opacity-60 grayscale cursor-not-allowed" : "hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(79,70,229,0.15)] animate-pulse-glow cursor-pointer";
+                // ADDED THE DYNAMIC HALO AND A SLIGHT HOVER LIFT HERE
+                const cardStateClass = isLocked ? "opacity-60 grayscale cursor-not-allowed" : `hover:-translate-y-2 ${deal.halo} cursor-pointer`;
                 const btnStateClass = isLocked ? "bg-gray-800 text-gray-500 border border-gray-700" : "bg-white/5 hover:bg-indigo-600 text-white border border-white/10 hover:border-indigo-500 shadow-lg";
                 const btnText = isLocked ? "Archive Locked" : "View Analytics & Metrics &rarr;";
                 
@@ -401,6 +410,20 @@
             }
             requestAnimationFrame(animateGrid);
         }
+
+        document.addEventListener('mousemove', (e) => {
+            const glow = document.getElementById('mouseGlow');
+            if(glow) {
+                glow.style.setProperty('--mouse-x', `${e.clientX}px`);
+                glow.style.setProperty('--mouse-y', `${e.clientY}px`);
+                if (glow.style.opacity === '0' || glow.style.opacity === '') glow.style.opacity = '1';
+            }
+        });
+
+        document.addEventListener('mouseleave', () => {
+            const glow = document.getElementById('mouseGlow');
+            if(glow) glow.style.opacity = '0';
+        });
 
         window.onload = function() {
             loadProperties();
