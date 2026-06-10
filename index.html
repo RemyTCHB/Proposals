@@ -369,7 +369,8 @@
                     action: 'log_access', 
                     timestamp: Date.now(), 
                     email: emailVal, 
-                    propertyId: prop.Property_ID, 
+                    propertyId: prop.Property_ID,
+                    keyUsed: document.getElementById('gateAccessKeyInput').value.trim(),
                     status: "SUCCESS_OTP", 
                     reason: "Verified Email" 
                 });
