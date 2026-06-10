@@ -117,13 +117,13 @@
 
   <div id="fullPageLoader" class="fixed inset-0 z-40 bg-brand-dark flex flex-col items-center justify-center">
       <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500 mb-4"></div>
-      <p class="text-indigo-400 font-bold uppercase tracking-widest animate-pulse">Constructing Proposal...</p>
+      <p class="text-indigo-400 font-bold uppercase tracking-widest animate-pulse" id="loaderText">Constructing Proposal...</p>
   </div>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 hidden" id="mainContent">
 
     <div id="soldOverlayBanner" class="hidden-module bg-brand-crimson/20 border border-brand-crimson text-brand-crimson px-4 py-3 rounded-xl mb-8 text-center font-bold tracking-widest uppercase">
-        Alert: This Property Has Been Sold or Closed. Data is Preserved For Archival Purposes Only.
+        Alert: This Property Has Been Sold Or Closed. Data Is Preserved For Archival Purposes Only.
     </div>
 
     <div class="print-page-1">
@@ -302,7 +302,6 @@
 
     Chart.register(ChartDataLabels);
 
-    // Unified Webhook Function (Safe for Cross-Origin Google Apps Script)
     function sendWebhookEvent(payload) {
         if (!LOGGING_WEBHOOK_URL) return;
         fetch(LOGGING_WEBHOOK_URL, {
@@ -310,7 +309,7 @@
             mode: 'no-cors',
             headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify(payload)
-        }).catch(err => console.log("Webhook sync error"));
+        }).catch(err => console.log("Webhook Sync Error"));
     }
 
     window.onload = async function() {
@@ -318,7 +317,7 @@
         urlPropId = urlParams.get('id');
 
         if (!urlPropId) {
-            document.getElementById('fullPageLoader').innerHTML = '<p class="text-red-400 font-bold">Error: No Property ID specified in URL.</p>';
+            document.getElementById('fullPageLoader').innerHTML = '<p class="text-red-400 font-bold">Error: No Property ID Specified In URL.</p>';
             return;
         }
 
@@ -330,7 +329,7 @@
             currentDBRow = data.properties.find(p => p.Property_ID === urlPropId);
 
             if (!currentDBRow) {
-                document.getElementById('fullPageLoader').innerHTML = '<p class="text-red-400 font-bold">Error: Property not found in database.</p>';
+                document.getElementById('fullPageLoader').innerHTML = '<p class="text-red-400 font-bold">Error: Property Not Found In Database.</p>';
                 return;
             }
 
@@ -368,34 +367,36 @@
 
     async function handleGateAuthStep() {
         const emailInput = document.getElementById('gateEmailInput').value.trim();
+        const keyInput = document.getElementById('gateAccessKeyInput').value.trim();
         const btn = document.getElementById('gateAuthButton');
 
         if (gateAuthStep === 1) {
-            const keyInput = document.getElementById('gateAccessKeyInput').value.trim();
-
             if (!isValidEmail(emailInput)) {
-                showGateError("Please enter a valid email address.");
+                showGateError("Please Enter A Valid Email Address.");
+                sendWebhookEvent({ action: 'failed_otp_request', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, accessKeyUsed: keyInput, status: "ERROR", reason: "Invalid Email Address Format" });
                 return;
             }
             if (keyInput !== currentDBRow.Access_Password) {
-                showGateError("Incorrect security authorization code.");
+                showGateError("Incorrect Security Authorization Code. Please Try Again.");
+                sendWebhookEvent({ action: 'failed_otp_request', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, accessKeyUsed: keyInput, status: "ERROR", reason: "Invalid Access Key" });
                 return;
             }
 
             gateExpectedOTP = Math.floor(100000 + Math.random() * 900000).toString();
             
-            const originalText = btn.innerText;
             btn.innerText = "Sending Code...";
             btn.classList.add('opacity-75', 'cursor-not-allowed');
             btn.disabled = true;
 
-            // Trigger Email (Fire and forget style)
             sendWebhookEvent({ 
                 action: 'send_otp', 
                 timestamp: Date.now(), 
                 email: emailInput, 
-                otp: gateExpectedOTP, 
-                propertyId: urlPropId 
+                propertyId: urlPropId,
+                accessKeyUsed: keyInput,
+                otpSent: gateExpectedOTP, 
+                status: "SUCCESS",
+                reason: "OTP Sent Successfully"
             });
 
             setTimeout(() => {
@@ -413,7 +414,8 @@
             const userOTP = document.getElementById('gateOtpInput').value.trim();
             
             if (userOTP !== gateExpectedOTP) {
-                showGateError("Incorrect verification code. Try again.");
+                showGateError("Incorrect Verification Code. Please Try Again.");
+                sendWebhookEvent({ action: 'failed_access', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, otpUsed: userOTP, status: "ERROR", reason: "Invalid Verification Code" });
                 return;
             }
 
@@ -424,9 +426,9 @@
                 timestamp: Date.now(), 
                 email: emailInput, 
                 propertyId: urlPropId,
-                keyUsed: document.getElementById('accessKeyInput').value.trim(),
-                status: "SUCCESS_OTP", 
-                reason: "Verified Email" 
+                otpUsed: userOTP,
+                status: "SUCCESS", 
+                reason: "Access Granted" 
             });
 
             unlockPage();
