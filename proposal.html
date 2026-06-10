@@ -41,30 +41,24 @@
     @keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); } 20%, 40%, 60%, 80% { transform: translateX(6px); } }
     .shake-element { animation: shake 0.4s ease-in-out; }
 
-    /* TIGHTER MOUSE GLOW (4 GRID BOXES = 220px) */
     #mouseGlow {
         position: fixed; inset: 0; pointer-events: none; z-index: 1;
         background: radial-gradient(220px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh), rgba(79,70,229,0.15) 0%, rgba(16,185,129,0.08) 40%, rgba(220,38,38,0.02) 60%, transparent 80%);
         opacity: 0; transition: opacity 0.5s ease; mix-blend-mode: screen;
     }
     
-    /* FIXED CUSTOM CURSOR */
     body, a, button, input, [onclick], .cursor-pointer, .cursor-not-allowed { cursor: none !important; }
     
     #cursor-dot { position: fixed; top: 0; left: 0; width: 6px; height: 6px; background: white; border-radius: 50%; pointer-events: none; z-index: 999999; transform: translate(-50%, -50%); transition: transform 0.15s ease-out, background-color 0.2s; opacity: 0; }
     #cursor-ring { position: fixed; top: 0; left: 0; width: 36px; height: 36px; border: 1.5px solid rgba(79, 70, 229, 0.6); border-radius: 50%; pointer-events: none; z-index: 999998; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s; opacity: 0; }
     
     body.mouse-active #cursor-dot, body.mouse-active #cursor-ring { opacity: 1; }
-    
-    /* NORMAL HOVER */
     body.cursor-hover #cursor-ring { width: 56px; height: 56px; background-color: rgba(79, 70, 229, 0.1); border-color: rgba(220, 38, 38, 0.8); }
     body.cursor-hover #cursor-dot { transform: translate(-50%, -50%) scale(1.5); background: #10b981; }
 
-    /* LOCKED CUSTOM CURSOR */
     body.cursor-locked #cursor-ring { width: 44px; height: 44px; background-color: rgba(220, 38, 38, 0.1); border-color: rgba(220, 38, 38, 0.8); border-style: dashed; }
     body.cursor-locked #cursor-dot { transform: translate(-50%, -50%) scale(1.2); background: #dc2626; }
 
-    /* Gate control */
     .gate-unlocked #secureGate { display: none !important; }
     .hidden-module { display: none !important; }
 
@@ -101,20 +95,29 @@
             <h3 class="text-xl font-bold text-white mb-1">Direct Link Verification</h3>
             <p class="text-xs text-gray-400">Please enter credentials to unlock this proposal</p>
         </div>
-        <div class="space-y-4">
+        
+        <!-- OTP 2-Step Form -->
+        <div id="gateStep1Container" class="space-y-4">
             <input type="email" id="gateEmailInput" placeholder="Email Address" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-text">
             <input type="password" id="gateAccessKeyInput" placeholder="Access Key" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-text">
-            <p id="gateErrorMessage" class="text-xs text-brand-crimson font-medium text-center hidden">Incorrect security authorization code.</p>
-            <button onclick="verifyGateKey()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer">
-                Unlock Proposal
-            </button>
         </div>
+
+        <div id="gateStep2Container" class="space-y-4 hidden mt-2">
+            <p class="text-xs text-brand-emerald text-center font-medium mb-4">A 6-digit verification code has been sent to your email.</p>
+            <input type="text" id="gateOtpInput" placeholder="000000" maxlength="6" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-brand-emerald transition-all cursor-text">
+            <button onclick="gateAuthStep = 1; document.getElementById('gateStep2Container').classList.add('hidden'); document.getElementById('gateStep1Container').classList.remove('hidden'); document.getElementById('gateAuthButton').innerText = 'Send Verification Code'; document.getElementById('gateErrorMessage').classList.add('hidden');" class="text-xs text-gray-500 hover:text-white w-full text-center mt-2 transition-colors cursor-pointer">← Back to edit email</button>
+        </div>
+
+        <p id="gateErrorMessage" class="text-xs text-brand-crimson font-medium text-center hidden mt-4">Incorrect security authorization code.</p>
+        
+        <button id="gateAuthButton" onclick="handleGateAuthStep()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 mt-4 cursor-pointer">
+            Send Verification Code
+        </button>
     </div>
   </div>
 
   <canvas id="gridCanvas" class="fixed inset-0 w-full h-full -z-10 no-print" style="pointer-events: none;"></canvas>
 
-  <!-- Full Page Loading State -->
   <div id="fullPageLoader" class="fixed inset-0 z-40 bg-brand-dark flex flex-col items-center justify-center">
       <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500 mb-4"></div>
       <p class="text-indigo-400 font-bold uppercase tracking-widest animate-pulse">Constructing Proposal...</p>
@@ -130,7 +133,6 @@
       <header class="flex flex-col md:flex-row justify-between items-center pb-8 border-b border-gray-800 gap-6">
         <div class="flex items-center gap-4">
           <a href="../" class="flex items-center hover:opacity-90 active:scale-95 duration-150 transition-all cursor-pointer">
-            <!-- LOGO POINTING TO LOCAL REPO W/O FALLBACK -->
             <img src="logo.svg" alt="Total Cash Home Buyers Logo" class="h-16 md:h-20 w-auto object-contain" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
           </a>
         </div>
@@ -153,7 +155,6 @@
 
       <!-- UNIVERSAL TOP KPI GRID -->
       <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Metric 1 (Indigo/Purple Theme) -->
         <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-300 group cursor-pointer">
           <div class="flex justify-between items-start">
             <div>
@@ -164,7 +165,6 @@
           </div>
           <p id="ui-kpi-1-desc" class="text-xs text-gray-300 mt-4 leading-relaxed">...</p>
         </div>
-        <!-- Metric 2 (Emerald Theme) -->
         <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-300 group cursor-pointer">
           <div class="flex justify-between items-start">
             <div>
@@ -175,7 +175,6 @@
           </div>
           <p id="ui-kpi-2-desc" class="text-xs text-gray-300 mt-4 leading-relaxed">...</p>
         </div>
-        <!-- Metric 3 (Gold Theme) -->
         <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-300 group cursor-pointer">
           <div class="flex justify-between items-start">
             <div>
@@ -306,12 +305,11 @@
     
     let currentDBRow = null;
     let urlPropId = null;
+    let gateAuthStep = 1;
+    let gateExpectedOTP = null;
 
     Chart.register(ChartDataLabels);
 
-    // ----------------------------------------------------
-    // STARTUP / DATA FETCHING
-    // ----------------------------------------------------
     window.onload = async function() {
         const urlParams = new URLSearchParams(window.location.search);
         urlPropId = urlParams.get('id');
@@ -326,7 +324,6 @@
             const data = await response.json();
             
             if (data.error) throw new Error(data.error);
-
             currentDBRow = data.properties.find(p => p.Property_ID === urlPropId);
 
             if (!currentDBRow) {
@@ -339,79 +336,104 @@
             document.getElementById('fullPageLoader').innerHTML = `<p class="text-red-400 font-bold">Connection Error: ${err.message}</p>`;
         }
         
-        // Start animation engine
         resizeCanvas();
         requestAnimationFrame(animateGrid);
     };
 
-    // ----------------------------------------------------
-    // SECURITY GATE
-    // ----------------------------------------------------
     function checkGate() {
         const sessionKey = 'tchb_access_granted_' + urlPropId;
         if (sessionStorage.getItem(sessionKey) === 'true') {
             unlockPage();
         } else {
-            // Document is locked, hide loader, show gate
             document.getElementById('fullPageLoader').classList.add('hidden');
         }
     }
 
-    // --- EMAIL VALIDATION RULESET ---
-    function isValidCorporateEmail(email) {
+    // --- SIMPLE EMAIL VALIDATION (Replaced strict corporate blocker) ---
+    function isValidEmail(email) {
         if (!email) return false;
-        email = email.toLowerCase().trim();
-        
-        // 1. Basic structural validation (Requires text@text.xyz format)
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
-        
-        const [localPart, domain] = email.split('@');
-        
-        // 2. Block disposable / test domains
-        const blockedDomains = ['test.com', 'example.com', 'mailinator.com', 'yopmail.com', '10minutemail.com', 'tempmail.com', 'guerrillamail.com', 'fake.com', 'email.com'];
-        if (blockedDomains.some(d => domain === d || domain.endsWith('.' + d))) return false;
-        
-        // 3. Block common fake prefixes
-        const blockedPrefixes = ['test', 'fake', 'demo', 'spam', 'admin', 'nobody', '1234', '12345', 'user'];
-        if (blockedPrefixes.includes(localPart)) return false;
-
-        return true;
+        // Just checks if it looks like a standard email: text@text.xyz
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.toLowerCase().trim());
     }
 
-    function verifyGateKey() {
-        const emailInput = document.getElementById('gateEmailInput').value.trim();
-        const keyInput = document.getElementById('gateAccessKeyInput').value.trim();
-        const errorMsg = document.getElementById('gateErrorMessage');
+    function showGateError(msg) {
+        const errorElement = document.getElementById('gateErrorMessage');
         const modalBox = document.getElementById('gateModalBox');
+        errorElement.innerText = msg;
+        errorElement.classList.remove('hidden');
+        modalBox.classList.add('shake-element');
+        setTimeout(() => { modalBox.classList.remove('shake-element'); }, 400);
+    }
 
-        let status = "FAILED";
-        let reason = "Unknown";
-        let authorized = false;
+    async function handleGateAuthStep() {
+        const emailInput = document.getElementById('gateEmailInput').value.trim();
+        const btn = document.getElementById('gateAuthButton');
 
-        if (!isValidCorporateEmail(emailInput)) {
-            reason = "Invalid or Test Email";
-            errorMsg.innerText = "Please enter a valid, verifiable email address.";
-        } else if (keyInput !== currentDBRow.Access_Password) {
-            reason = "Incorrect Security Key";
-            errorMsg.innerText = "Incorrect security authorization code.";
-        } else {
-            status = "SUCCESS"; reason = "Valid Credentials"; authorized = true;
-        }
+        if (gateAuthStep === 1) {
+            const keyInput = document.getElementById('gateAccessKeyInput').value.trim();
 
-        if (typeof LOGGING_WEBHOOK_URL !== 'undefined') {
-            fetch(LOGGING_WEBHOOK_URL, {
-                method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'log_access', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, keyUsed: keyInput, status: status, reason: reason })
-            }).catch(e => console.log("Log fail"));
-        }
+            // Using the new simple validation
+            if (!isValidEmail(emailInput)) {
+                showGateError("Please enter a valid email address.");
+                return;
+            }
+            if (keyInput !== currentDBRow.Access_Password) {
+                showGateError("Incorrect security authorization code.");
+                return;
+            }
 
-        if (authorized) {
+            // Valid Step 1. Generate OTP and Trigger webhook
+            gateExpectedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            const originalText = btn.innerText;
+            btn.innerText = "Sending code...";
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            btn.disabled = true;
+
+            if (typeof LOGGING_WEBHOOK_URL !== 'undefined') {
+                try {
+                    await fetch(LOGGING_WEBHOOK_URL, {
+                        method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            action: 'send_otp', timestamp: Date.now(), email: emailInput, 
+                            otp: gateExpectedOTP, propertyId: urlPropId 
+                        })
+                    });
+                } catch(e) {}
+            }
+
+            // Move to Step 2
+            setTimeout(() => {
+                gateAuthStep = 2;
+                document.getElementById('gateStep1Container').classList.add('hidden');
+                document.getElementById('gateStep2Container').classList.remove('hidden');
+                document.getElementById('gateErrorMessage').classList.add('hidden');
+                btn.innerText = "Verify & Unlock Proposal";
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                btn.disabled = false;
+                document.getElementById('gateOtpInput').focus();
+            }, 500);
+
+        } else if (gateAuthStep === 2) {
+            const userOTP = document.getElementById('gateOtpInput').value.trim();
+            
+            if (userOTP !== gateExpectedOTP) {
+                showGateError("Incorrect verification code. Try again.");
+                return;
+            }
+
+            // Access Granted
             sessionStorage.setItem('tchb_access_granted_' + urlPropId, 'true');
+            
+            // Log successful access
+            if (typeof LOGGING_WEBHOOK_URL !== 'undefined') {
+                fetch(LOGGING_WEBHOOK_URL, {
+                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'log_access', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, status: "SUCCESS_OTP", reason: "Verified Email" })
+                }).catch(e => {});
+            }
+
             unlockPage();
-        } else {
-            errorMsg.classList.remove('hidden');
-            modalBox.classList.add('shake-element');
-            setTimeout(() => modalBox.classList.remove('shake-element'), 400);
         }
     }
 
@@ -420,7 +442,6 @@
         document.getElementById('fullPageLoader').classList.add('hidden');
         document.getElementById('mainContent').classList.remove('hidden');
 
-        // MAP GOOGLE SHEET TO UI
         const dealTypeRaw = (currentDBRow.Deal_Type || '').toLowerCase().replace(/ /g, '_');
         const badgeStyle = getDealThemeClass(dealTypeRaw);
 
@@ -440,28 +461,23 @@
             nav1Title: currentDBRow.Nav_1_Title, nav1Desc: currentDBRow.Nav_1_Desc,
             nav2Title: currentDBRow.Nav_2_Title, nav2Desc: currentDBRow.Nav_2_Desc,
 
-            // Creative
             sub2Rate: currentDBRow.CR_Sub2_Rate, marketRate: currentDBRow.CR_Market_Rate,
             sub2PI: parseFloat(currentDBRow.CR_Sub2_PI) || 0, marketPI: parseFloat(currentDBRow.CR_Market_PI) || 0,
             escrow: parseFloat(currentDBRow.CR_Escrow) || 0, totalInterestSaved: currentDBRow.CR_Total_Interest_Saved,
             
-            // Wholesale / Flip
             purchasePrice: currentDBRow.WS_Purchase_Price, closingCosts: currentDBRow.WS_Closing_Costs,
             repairBudget: currentDBRow.WS_Repair_Budget, holdingCosts: currentDBRow.WS_Holding_Costs,
             totalBasis: currentDBRow.WS_Total_Basis, arv: currentDBRow.WS_ARV,
             realtorFees: currentDBRow.WS_Realtor_Fees, netReturn: currentDBRow.WS_Net_Return,
             
-            // Novation
             nvSellerBase: currentDBRow.NV_Seller_Guarantee, nvRehab: currentDBRow.NV_Rehab_Capital,
             nvLegal: currentDBRow.NV_Legal_Holding, nvTotalRisk: currentDBRow.NV_Total_Capital_Risk,
             nvARV: currentDBRow.NV_Retail_ARV, nvDispCosts: currentDBRow.NV_Disposition_Costs,
             nvGrossProfit: currentDBRow.NV_Total_Gross_Profit, nvNetROI: currentDBRow.NV_Investor_Net,
             
-            // Seller Finance
             sfDownPayment: currentDBRow.SF_Down_Payment, sfAmort: currentDBRow.SF_Amort_Term,
             sfBalloon: currentDBRow.SF_Balloon_Term, sfPayment: currentDBRow.SF_Monthly_Payment,
             
-            // Rental
             rnPrice: currentDBRow.RN_Purchase_Price, rnNOI: currentDBRow.RN_NOI,
             rnRent: currentDBRow.RN_Gross_Rent, rnCapRate: currentDBRow.RN_Cap_Rate,
             rnOpEx: currentDBRow.RN_OpEx, rnCoC: currentDBRow.RN_Cash_on_Cash
@@ -484,9 +500,6 @@
         return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
     }
 
-    // ----------------------------------------------------
-    // RENDERING LOGIC
-    // ----------------------------------------------------
     function renderUniversalPage(data) {
         document.getElementById('ui-badge').className = `inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border mb-2 uppercase tracking-wide ${data.badgeColor}`;
         document.getElementById('ui-badge').innerText = data.badgeText;
@@ -591,7 +604,6 @@
             options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }
         });
 
-        // Simple mock curve calculation based on P&I for visualization
         const m1 = data.marketPI * 12; const s1 = data.sub2PI * 12;
         const ctxInterest = document.getElementById('interestChart').getContext('2d');
         lineChart2 = new Chart(ctxInterest, {
@@ -634,16 +646,12 @@
         });
     }
 
-    // ----------------------------------------------------
-    // ANIMATION ENGINE & MOUSE GLOW
-    // ----------------------------------------------------
     const canvas = document.getElementById('gridCanvas');
     const ctx = canvas.getContext('2d');
     let gridSize = 55; let sparks = []; let lastSpanSpawn = 0;
     let lastInteractionTime = Date.now(); 
     const brandColors = [{ r: 79, g: 70, b: 229 }, { r: 220, g: 38, b: 38 }, { r: 16, g: 185, b: 129 }];
 
-    // Custom Cursor Variables
     let customMouseX = window.innerWidth / 2;
     let customMouseY = window.innerHeight / 2;
     let ringX = customMouseX;
@@ -656,7 +664,6 @@
         const isHorizontal = Math.random() > 0.5;
         let startX, startY, dirX, dirY;
         if (isClick && x !== null && y !== null) {
-            // FORCE SNAP TO NEAREST GRIDLINE CORNER
             startX = Math.round(x / gridSize) * gridSize;
             startY = Math.round(y / gridSize) * gridSize;
             dirX = isHorizontal ? (Math.random() > 0.5 ? 1 : -1) : 0; dirY = isHorizontal ? 0 : (Math.random() > 0.5 ? 1 : -1);
@@ -673,7 +680,6 @@
         sparks.push({ startX, startY, targetX: startX + dirX * gridSize, targetY: startY + dirY * gridSize, dirX, dirY, progress: 0, speed: 0.02 + Math.random() * 0.03, life: 1, decay: 0.005 + Math.random() * 0.01, history: [], color: color });
     }
 
-    // Click logic
     document.addEventListener('mousedown', (e) => { 
         lastInteractionTime = Date.now();
         for(let i=0; i<3; i++) createSpark(e.clientX, e.clientY, true); 
@@ -685,9 +691,8 @@
         }
     });
 
-    // Mouse tracking & interactions
     document.addEventListener('mousemove', (e) => {
-        document.body.classList.add('mouse-active'); // Make cursor visible on first move
+        document.body.classList.add('mouse-active');
         customMouseX = e.clientX;
         customMouseY = e.clientY;
 
@@ -746,7 +751,6 @@
         for (let y = 0; y < canvas.height; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); }
         ctx.stroke();
 
-        // Cursor smoothing
         ringX += (customMouseX - ringX) * 0.15;
         ringY += (customMouseY - ringY) * 0.15;
         const ring = document.getElementById('cursor-ring');
