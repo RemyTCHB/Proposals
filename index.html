@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TCHB Property Portal</title>
-    <link rel="icon" type="image/png" href="./icon.png">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -37,26 +37,44 @@
             20%, 40%, 60%, 80% { transform: translateX(6px); }
         }
         .shake-element { animation: shake 0.4s ease-in-out; }
-        
+
+        /* TIGHTER MOUSE GLOW (4 GRID BOXES = 220px) */
         #mouseGlow {
             position: fixed; inset: 0; pointer-events: none; z-index: 1;
-            background: radial-gradient(800px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh), rgba(79,70,229,0.12) 0%, rgba(16,185,129,0.06) 40%, rgba(220,38,38,0.02) 60%, transparent 80%);
+            background: radial-gradient(220px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh), rgba(79,70,229,0.15) 0%, rgba(16,185,129,0.08) 40%, rgba(220,38,38,0.02) 60%, transparent 80%);
             opacity: 0; transition: opacity 0.5s ease; mix-blend-mode: screen;
         }
-
-        /* CUSTOM CURSOR */
-        @media (hover: hover) and (pointer: fine) {
-            body, a, button, input, [onclick], .cursor-pointer { cursor: none !important; }
-            #cursor-dot, #cursor-ring { display: block; }
-        }
-        #cursor-dot { position: fixed; top: 0; left: 0; width: 6px; height: 6px; background: white; border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: transform 0.15s ease-out, background-color 0.2s; display: none; }
-        #cursor-ring { position: fixed; top: 0; left: 0; width: 36px; height: 36px; border: 1.5px solid rgba(79, 70, 229, 0.6); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s; display: none; }
-        body.cursor-hover #cursor-ring { width: 56px; height: 56px; background-color: rgba(79, 70, 229, 0.1); border-color: rgba(16, 185, 129, 0.8); }
+        
+        /* FIXED CUSTOM CURSOR */
+        body, a, button, input, [onclick], .cursor-pointer { cursor: none !important; }
+        
+        #cursor-dot { position: fixed; top: 0; left: 0; width: 6px; height: 6px; background: white; border-radius: 50%; pointer-events: none; z-index: 999999; transform: translate(-50%, -50%); transition: transform 0.15s ease-out, background-color 0.2s; opacity: 0; }
+        #cursor-ring { position: fixed; top: 0; left: 0; width: 36px; height: 36px; border: 1.5px solid rgba(79, 70, 229, 0.6); border-radius: 50%; pointer-events: none; z-index: 999998; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s; opacity: 0; }
+        
+        body.mouse-active #cursor-dot, body.mouse-active #cursor-ring { opacity: 1; }
+        
+        /* CRIMSON RING AND EMERALD DOT ON HOVER */
+        body.cursor-hover #cursor-ring { width: 56px; height: 56px; background-color: rgba(79, 70, 229, 0.1); border-color: rgba(220, 38, 38, 0.8); }
         body.cursor-hover #cursor-dot { transform: translate(-50%, -50%) scale(1.5); background: #10b981; }
+
+        /* HORIZONTAL ANIMATED TEXT GRADIENT */
+        .animate-text-gradient {
+            background: linear-gradient(to right, #4f46e5, #10b981, #dc2626, #10b981, #4f46e5);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            animation: pan-x 6s linear infinite;
+        }
+        @keyframes pan-x {
+            0% { background-position: 100% center; }
+            100% { background-position: 0% center; }
+        }
     </style>
 </head>
 <body class="bg-brand-dark min-h-screen font-sans antialiased relative">
-    
+
     <!-- Ambient Mouse Flashlight & Custom Cursor -->
     <div id="mouseGlow"></div>
     <div id="cursor-dot"></div>
@@ -98,12 +116,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         <header class="text-center mb-16">
             <div class="inline-flex justify-center items-center mb-6 w-full">
-                <!-- LOGO POINTING TO LOCAL REPO -->
-                <img src="./logo.svg" alt="Total Cash Home Buyers" class="h-24 md:h-28 w-auto drop-shadow-2xl hover:scale-105 transition-transform duration-300 object-contain" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
+                <!-- LOGO NO FALLBACK -->
+                <img src="logo.svg" alt="Total Cash Home Buyers" class="h-24 md:h-28 w-auto drop-shadow-2xl hover:scale-105 transition-transform duration-300 object-contain" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
             </div>
             <p class="text-sm font-semibold tracking-[0.2em] text-indigo-400 uppercase mb-2">Investor Network</p>
             <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
-                Property <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-emerald-400">Portal</span>
+                Property <span class="animate-text-gradient">Portal</span>
             </h1>
             <p class="max-w-2xl mx-auto text-gray-400 text-sm md:text-base">
                 Use your email and the access key provided to you to get all the info about the property in question.
@@ -119,13 +137,14 @@
             <!-- Dynamic Cards Will Inject Here -->
         </div>
 
+        <!-- UNIFIED FOOTER -->
         <footer class="mt-24 text-center border-t border-white/10 pt-8 pb-12 flex flex-col items-center gap-2">
             <div class="flex items-center justify-center gap-2 mb-2">
-                <!-- ICON POINTING TO LOCAL REPO -->
-                <img class="w-6 h-6 opacity-50" src="./icon.png" alt="TCHB Icon">
+                <!-- ICON NO FALLBACK -->
+                <img class="w-6 h-6 opacity-50" src="icon.svg" alt="TCHB Icon">
                 <span class="font-bold text-gray-400 text-xs">TOTAL CASH HOME BUYERS</span> <span class="text-gray-500 text-xs">•</span> <span class="text-gray-500 text-xs">Investor Network</span>
             </div>
-            <div class="flex flex-wrap gap-4 justify-center items-center text-xs mt-1 mb-4 text-gray-400">
+            <div class="flex gap-4 justify-center text-xs mt-1 mb-4 text-gray-400">
                 <a href="mailto:Carlos@totalchb.com" class="hover:text-indigo-400 transition-colors flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     Carlos@totalchb.com
@@ -143,7 +162,7 @@
 
     <script>
         // ----------------------------------------------------
-        // THEME MAPPERS (With Dynamic Hover Halos)
+        // THEME MAPPERS
         // ----------------------------------------------------
         function getStatusTheme(status) {
             const s = (status || '').toUpperCase();
@@ -154,13 +173,13 @@
 
         function getDealTheme(type) {
             const t = (type || '').toLowerCase();
-            if (t === 'creative') return { class: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20', glow: 'border-t-indigo-500', halo: 'hover:shadow-[0_0_40px_rgba(79,70,229,0.4)]', label: 'Subject-To / Creative' };
-            if (t === 'wholesale') return { class: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', glow: 'border-t-emerald-500', halo: 'hover:shadow-[0_0_40px_rgba(16,185,129,0.4)]', label: 'Wholesale' };
-            if (t === 'fix_flip') return { class: 'text-blue-400 bg-blue-500/10 border-blue-500/20', glow: 'border-t-blue-500', halo: 'hover:shadow-[0_0_40px_rgba(59,130,246,0.4)]', label: 'Fix & Flip' };
-            if (t === 'novation') return { class: 'text-amber-400 bg-amber-500/10 border-amber-500/20', glow: 'border-t-amber-500', halo: 'hover:shadow-[0_0_40px_rgba(245,158,11,0.4)]', label: 'Novation JV' };
-            if (t === 'seller_finance') return { class: 'text-purple-400 bg-purple-500/10 border-purple-500/20', glow: 'border-t-purple-500', halo: 'hover:shadow-[0_0_40px_rgba(168,85,247,0.4)]', label: 'Seller Financed' };
-            if (t === 'rental') return { class: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20', glow: 'border-t-cyan-500', halo: 'hover:shadow-[0_0_40px_rgba(6,182,212,0.4)]', label: 'Turnkey / Rental' };
-            return { class: 'text-gray-400 bg-gray-500/10 border-gray-500/20', glow: 'border-t-gray-500', halo: 'hover:shadow-[0_0_40px_rgba(156,163,175,0.4)]', label: 'Investment Deal' };
+            if (t === 'creative') return { class: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20', halo: 'rgba(79,70,229,0.15)', glow: 'border-t-indigo-500', label: 'Subject-To / Creative' };
+            if (t === 'wholesale') return { class: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', halo: 'rgba(16,185,129,0.15)', glow: 'border-t-emerald-500', label: 'Wholesale' };
+            if (t === 'fix_flip') return { class: 'text-blue-400 bg-blue-500/10 border-blue-500/20', halo: 'rgba(59,130,246,0.15)', glow: 'border-t-blue-500', label: 'Fix & Flip' };
+            if (t === 'novation') return { class: 'text-amber-400 bg-amber-500/10 border-amber-500/20', halo: 'rgba(245,158,11,0.15)', glow: 'border-t-amber-500', label: 'Novation JV' };
+            if (t === 'seller_finance') return { class: 'text-purple-400 bg-purple-500/10 border-purple-500/20', halo: 'rgba(168,85,247,0.15)', glow: 'border-t-purple-500', label: 'Seller Financed' };
+            if (t === 'rental') return { class: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20', halo: 'rgba(6,182,212,0.15)', glow: 'border-t-cyan-500', label: 'Turnkey / Rental' };
+            return { class: 'text-gray-400 bg-gray-500/10 border-gray-500/20', halo: 'rgba(156,163,175,0.15)', glow: 'border-t-gray-500', label: 'Investment Deal' };
         }
 
         // ----------------------------------------------------
@@ -195,15 +214,15 @@
                 const deal = getDealTheme(prop.Deal_Type);
                 const isLocked = status.locked;
                 
-                // Uses dynamic hover halo based on deal type
-                const cardStateClass = isLocked ? "opacity-60 grayscale cursor-not-allowed" : `hover:-translate-y-2 animate-pulse-glow ${deal.halo} cursor-pointer`;
+                const cardStateClass = isLocked ? "opacity-60 grayscale cursor-not-allowed" : "cursor-pointer transition-all duration-500 hover:-translate-y-1";
+                const dynamicHoverHalo = isLocked ? "" : `onmouseover="this.style.boxShadow='0 20px 40px ${deal.halo}'" onmouseout="this.style.boxShadow='none'"`;
                 const btnStateClass = isLocked ? "bg-gray-800 text-gray-500 border border-gray-700" : "bg-white/5 hover:bg-indigo-600 text-white border border-white/10 hover:border-indigo-500 shadow-lg";
                 const btnText = isLocked ? "Archive Locked" : "View Analytics & Metrics &rarr;";
                 
                 const clickHandler = isLocked ? "" : `onclick="openModal('${prop.Property_ID}')"`;
 
                 const cardHTML = `
-                    <div class="bg-brand-card backdrop-blur-xl border-t-2 ${deal.glow} border-x border-b border-gray-800 rounded-2xl p-6 transition-all duration-300 flex flex-col ${cardStateClass}" ${clickHandler}>
+                    <div class="bg-brand-card backdrop-blur-xl border-t-2 ${deal.glow} border-x border-b border-gray-800 rounded-2xl p-6 flex flex-col ${cardStateClass}" ${dynamicHoverHalo} ${clickHandler}>
                         <div class="flex justify-between items-start mb-4">
                             <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${deal.class}">
                                 ${deal.label}
@@ -279,7 +298,6 @@
                 isAuthorized = true;
             }
 
-            // Webhook Logger
             if (typeof LOGGING_WEBHOOK_URL !== 'undefined' && LOGGING_WEBHOOK_URL) {
                 fetch(LOGGING_WEBHOOK_URL, {
                     method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
@@ -292,13 +310,11 @@
                 const lockIcon = document.getElementById('lockIcon');
                 sessionStorage.setItem('tchb_access_granted_' + prop.Property_ID, 'true');
                 
-                lockIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>';
+                lockIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>';
                 lockIcon.className = "w-8 h-8 text-brand-emerald transition-all duration-300 scale-110";
                 document.getElementById('lockIconContainer').className = "mx-auto w-16 h-16 rounded-full bg-brand-emerald/10 flex items-center justify-center border border-brand-emerald/20 mb-4 animate-bounce";
 
-                setTimeout(() => {
-                    window.location.href = `proposal.html?id=${prop.Property_ID}`;
-                }, 800);
+                setTimeout(() => { window.location.href = `proposal.html?id=${prop.Property_ID}`; }, 800);
             } else {
                 errorMsg.classList.remove('hidden');
                 modalBox.classList.add('shake-element');
@@ -312,15 +328,9 @@
         // ----------------------------------------------------
         const canvas = document.getElementById('gridCanvas');
         const ctx = canvas.getContext('2d');
-        let gridSize = 55;
-        let sparks = [];
-        let lastSpanSpawn = 0;
-        let lastInteractionTime = Date.now(); // AUTO SPARK IDLE TIMER
-        const brandColors = [
-            { r: 79, g: 70, b: 229 },  // Indigo
-            { r: 220, g: 38, b: 38 },  // Crimson
-            { r: 16, g: 185, b: 129 }  // Emerald
-        ];
+        let gridSize = 55; let sparks = []; let lastSpanSpawn = 0;
+        let lastInteractionTime = Date.now(); 
+        const brandColors = [{ r: 79, g: 70, b: 229 }, { r: 220, g: 38, b: 38 }, { r: 16, g: 185, b: 129 }];
 
         // Custom Cursor Variables
         let customMouseX = window.innerWidth / 2;
@@ -335,11 +345,9 @@
         function createSpark(x = null, y = null, isClick = false) {
             const isHorizontal = Math.random() > 0.5;
             let startX, startY, dirX, dirY;
-            
             if (isClick && x !== null && y !== null) {
                 startX = Math.floor(x / gridSize) * gridSize; startY = Math.floor(y / gridSize) * gridSize;
-                dirX = isHorizontal ? (Math.random() > 0.5 ? 1 : -1) : 0;
-                dirY = isHorizontal ? 0 : (Math.random() > 0.5 ? 1 : -1);
+                dirX = isHorizontal ? (Math.random() > 0.5 ? 1 : -1) : 0; dirY = isHorizontal ? 0 : (Math.random() > 0.5 ? 1 : -1);
             } else {
                 if (isHorizontal) {
                     startX = Math.random() < 0.5 ? 0 : canvas.width; startY = Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize;
@@ -349,22 +357,15 @@
                     dirX = 0; dirY = startY === 0 ? 1 : -1;
                 }
             }
-            
             const color = brandColors[Math.floor(Math.random() * brandColors.length)];
-
-            sparks.push({
-                startX, startY, targetX: startX + dirX * gridSize, targetY: startY + dirY * gridSize,
-                dirX, dirY, progress: 0, speed: 0.02 + Math.random() * 0.03, life: 1, decay: 0.005 + Math.random() * 0.01,
-                history: [], color: color
-            });
+            sparks.push({ startX, startY, targetX: startX + dirX * gridSize, targetY: startY + dirY * gridSize, dirX, dirY, progress: 0, speed: 0.02 + Math.random() * 0.03, life: 1, decay: 0.005 + Math.random() * 0.01, history: [], color: color });
         }
 
-        // ON CLICK ACTION - Attached to document so pointer-events: none doesn't block it
+        // Click logic
         document.addEventListener('mousedown', (e) => { 
             lastInteractionTime = Date.now();
             for(let i=0; i<3; i++) createSpark(e.clientX, e.clientY, true); 
 
-            // Cursor click compression effect
             const ring = document.getElementById('cursor-ring');
             if(ring) {
                 ring.style.transform = `translate(-50%, -50%) scale(0.7)`;
@@ -372,17 +373,14 @@
             }
         });
 
-        // AMBIENT MOUSE FLASHLIGHT TRACKING & CURSOR
+        // Mouse tracking
         document.addEventListener('mousemove', (e) => {
+            document.body.classList.add('mouse-active'); // Make cursor visible on first move
             customMouseX = e.clientX;
             customMouseY = e.clientY;
 
-            // Move Dot instantly
             const dot = document.getElementById('cursor-dot');
-            if(dot) {
-                dot.style.left = `${customMouseX}px`;
-                dot.style.top = `${customMouseY}px`;
-            }
+            if(dot) { dot.style.left = `${customMouseX}px`; dot.style.top = `${customMouseY}px`; }
 
             const glow = document.getElementById('mouseGlow');
             if(glow) {
@@ -392,7 +390,6 @@
             }
         });
 
-        // Cursor Hover Effects for interactive elements
         document.addEventListener('mouseover', (e) => {
             if (e.target.closest('a, button, input, [onclick], .cursor-pointer')) {
                 document.body.classList.add('cursor-hover');
@@ -413,16 +410,13 @@
                 ctx.beginPath(); ctx.moveTo(spark.startX, spark.startY);
                 ctx.lineTo(spark.startX + (spark.targetX - spark.startX) * spark.progress, spark.startY + (spark.targetY - spark.startY) * spark.progress);
                 ctx.strokeStyle = `rgba(${c.r}, ${c.g}, ${c.b}, ${spark.life})`; ctx.lineWidth = 2; ctx.stroke();
-
                 spark.history.forEach((point, index) => {
                     ctx.beginPath(); ctx.moveTo(point.x, point.y); ctx.lineTo(point.nextX, point.nextY);
                     ctx.strokeStyle = `rgba(${c.r}, ${c.g}, ${c.b}, ${spark.life * (index / spark.history.length) * 0.5})`;
                     ctx.lineWidth = 2 * (index / spark.history.length); ctx.stroke();
                 });
-
                 ctx.shadowColor = `rgb(${c.r}, ${c.g}, ${c.b})`; ctx.shadowBlur = 10; ctx.beginPath();
-                const currentX = spark.startX + (spark.targetX - spark.startX) * spark.progress;
-                const currentY = spark.startY + (spark.targetY - spark.startY) * spark.progress;
+                const currentX = spark.startX + (spark.targetX - spark.startX) * spark.progress; const currentY = spark.startY + (spark.targetY - spark.startY) * spark.progress;
                 ctx.arc(currentX, currentY, 1.5, 0, Math.PI * 2);
                 ctx.fillStyle = `rgba(${Math.min(c.r+40,255)}, ${Math.min(c.g+40,255)}, ${Math.min(c.b+40,255)}, ${spark.life})`;
                 ctx.fill(); ctx.shadowBlur = 0;
@@ -431,47 +425,34 @@
 
         function animateGrid(timestamp) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)'; ctx.lineWidth = 1; ctx.beginPath();
+            ctx.strokeStyle = 'rgba(79, 70, 229, 0.07)'; ctx.lineWidth = 1; ctx.beginPath();
             for (let x = 0; x < canvas.width; x += gridSize) { ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); }
             for (let y = 0; y < canvas.height; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); }
             ctx.stroke();
 
-            // Custom Cursor Trailing Ring Animation (Smooth follow physics)
+            // Cursor smoothing
             ringX += (customMouseX - ringX) * 0.15;
             ringY += (customMouseY - ringY) * 0.15;
             const ring = document.getElementById('cursor-ring');
-            if (ring) {
-                ring.style.left = `${ringX}px`;
-                ring.style.top = `${ringY}px`;
-            }
+            if (ring) { ring.style.left = `${ringX}px`; ring.style.top = `${ringY}px`; }
 
             drawSparks();
             
-            // AUTO SPARK CHECK (Only spawn if 5 seconds have passed without a click)
             if (Date.now() - lastInteractionTime > 5000) {
                 if (timestamp - lastSpanSpawn > 500 && sparks.length < 32) { 
-                    createSpark(); 
-                    lastSpanSpawn = timestamp; 
+                    createSpark(); lastSpanSpawn = timestamp; 
                 }
             }
 
             for (let i = sparks.length - 1; i >= 0; i--) {
-                let spark = sparks[i];
-                spark.progress += spark.speed; spark.life -= spark.decay;
-
+                let spark = sparks[i]; spark.progress += spark.speed; spark.life -= spark.decay;
                 if (spark.history.length > 5) spark.history.shift();
-                spark.history.push({
-                    x: spark.startX + (spark.targetX - spark.startX) * spark.progress, y: spark.startY + (spark.targetY - spark.startY) * spark.progress,
-                    nextX: spark.startX + (spark.targetX - spark.startX) * (spark.progress + 0.1), nextY: spark.startY + (spark.targetY - spark.startY) * (spark.progress + 0.1)
-                });
-
+                spark.history.push({ x: spark.startX + (spark.targetX - spark.startX) * spark.progress, y: spark.startY + (spark.targetY - spark.startY) * spark.progress, nextX: spark.startX + (spark.targetX - spark.startX) * (spark.progress + 0.1), nextY: spark.startY + (spark.targetY - spark.startY) * (spark.progress + 0.1) });
                 if (spark.life <= 0) { sparks.splice(i, 1); } 
                 else if (spark.progress >= 1) {
                     spark.startX = spark.targetX; spark.startY = spark.targetY; spark.progress = 0;
                     if (Math.random() < 0.3 && sparks.length < 32) {
-                        let isHorizontal = spark.dirX !== 0;
-                        let branchDirX = isHorizontal ? 0 : (Math.random() > 0.5 ? 1 : -1);
-                        let branchDirY = isHorizontal ? (Math.random() > 0.5 ? 1 : -1) : 0;
+                        let isHorizontal = spark.dirX !== 0; let branchDirX = isHorizontal ? 0 : (Math.random() > 0.5 ? 1 : -1); let branchDirY = isHorizontal ? (Math.random() > 0.5 ? 1 : -1) : 0;
                         sparks.push({ startX: spark.startX, startY: spark.startY, targetX: spark.startX + branchDirX * gridSize, targetY: spark.startY + branchDirY * gridSize, dirX: branchDirX, dirY: branchDirY, progress: 0, speed: spark.speed, life: spark.life * 0.75, decay: spark.decay, history: [], color: spark.color });
                     }
                     spark.targetX = spark.startX + spark.dirX * gridSize; spark.targetY = spark.startY + spark.dirY * gridSize;
