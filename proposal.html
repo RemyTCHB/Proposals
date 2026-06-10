@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCHB - Underwriting Proposal</title>
+  
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/47YwXN6z/TCHB-ICON-1-white.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          colors: {
+            brand: { purple: '#4f46e5', crimson: '#dc2626', emerald: '#10b981', gold: '#f59e0b', bgDark: '#0b0f19', cardBg: '#111827' }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body { background-color: #0b0f19; color: #f3f4f6; overflow-x: hidden; }
+    .gradient-border { position: relative; }
+    .gradient-border::before {
+      content: ""; position: absolute; inset: 0; border-radius: 0.75rem; padding: 1.5px;
+      background: linear-gradient(to right, #4f46e5, #dc2626);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+    }
+    tbody tr { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    tbody tr:hover { background-color: rgba(79, 70, 229, 0.12) !important; }
+    tbody tr:hover td { color: #ffffff !important; }
+
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); } 20%, 40%, 60%, 80% { transform: translateX(6px); } }
+    .shake-element { animation: shake 0.4s ease-in-out; }
+    
+    /* Gate control */
+    .gate-unlocked #secureGate { display: none !important; }
+    .hidden-module { display: none !important; }
+
+    @media print {
+      @page { size: letter portrait; margin: 0.4in; }
+      html, body { background-color: #0b0f19 !important; color: #f3f4f6 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      .no-print { display: none !important; }
+      .gradient-border::before { display: none !important; content: none !important; }
+      .gradient-border { border: 1px solid #1e293b !important; border-radius: 0.75rem !important; background-color: #111827 !important; }
+      .print-page-1 { page-break-after: always !important; }
+      table { font-size: 11px !important; }
+      .chart-container-print { height: 260px !important; }
+    }
+  </style>
+</head>
+<body class="font-sans antialiased relative">
+
+  <!-- Security Gate (For direct links) -->
+  <div id="secureGate" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md no-print">
+    <div class="bg-[#0f0f1f] border border-indigo-500/30 rounded-2xl w-full max-w-md p-6 relative shadow-2xl" id="gateModalBox">
+        <button onclick="window.location.href='../'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <div class="text-center mb-6">
+            <div class="mx-auto w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 mb-4" id="gateLockIconContainer">
+                <svg id="gateLockIcon" class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-1">Direct Link Verification</h3>
+            <p class="text-xs text-gray-400">Please enter credentials to unlock this proposal</p>
+        </div>
+        <div class="space-y-4">
+            <input type="email" id="gateEmailInput" placeholder="Email Address" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+            <input type="password" id="gateAccessKeyInput" placeholder="Access Key" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+            <p id="gateErrorMessage" class="text-xs text-brand-crimson font-medium text-center hidden">Incorrect security authorization code.</p>
+            <button onclick="verifyGateKey()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                Unlock Deal Analysis
+            </button>
+        </div>
+    </div>
+  </div>
+
+  <canvas id="gridCanvas" class="fixed inset-0 w-full h-full -z-10 no-print" style="pointer-events: none;"></canvas>
+
+  <!-- Full Page Loading State -->
+  <div id="fullPageLoader" class="fixed inset-0 z-40 bg-brand-dark flex flex-col items-center justify-center">
+      <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500 mb-4"></div>
+      <p class="text-indigo-400 font-bold uppercase tracking-widest animate-pulse">Constructing Proposal...</p>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 hidden" id="mainContent">
+
+    <div id="soldOverlayBanner" class="hidden-module bg-brand-crimson/20 border border-brand-crimson text-brand-crimson px-4 py-3 rounded-xl mb-8 text-center font-bold tracking-widest uppercase">
+        Alert: This property has been sold or closed. Data is preserved for archival purposes only.
+    </div>
+
+    <div class="print-page-1">
+      <header class="flex flex-col md:flex-row justify-between items-center pb-8 border-b border-gray-800 gap-6">
+        <div class="flex items-center gap-4">
+          <a href="../" class="flex items-center hover:opacity-90 active:scale-95 duration-150 transition-all">
+            <img src="https://i.postimg.cc/9zn5PrgX/TCHB-LOGO.png" alt="Total Cash Home Buyers Logo" class="h-16 md:h-20 w-auto object-contain">
+          </a>
+        </div>
+        <div class="text-right flex flex-col items-center md:items-end">
+          <span id="ui-badge" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border mb-2 uppercase tracking-wide">...</span>
+          <h2 id="ui-address" class="text-xl font-bold tracking-tight text-white">...</h2>
+          <p id="ui-citystate" class="text-xs text-gray-400 font-mono tracking-widest mt-1">...</p>
+        </div>
+      </header>
+
+      <!-- Primary Financial Pill -->
+      <div class="mt-6 flex justify-center text-center">
+        <div class="inline-flex flex-wrap justify-center items-center gap-2 px-6 py-3 rounded-xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-indigo-950/60 to-purple-950/60 text-indigo-200 border border-indigo-500/30 shadow-[0_4px_20px_rgba(99,102,241,0.15)]">
+          <span id="ui-pill-price" class="text-white font-black">...</span>
+          <span class="text-indigo-400/40">|</span>
+          <span id="ui-pill-detail-1">...</span>
+          <span class="text-indigo-400/40">[</span><span id="ui-pill-detail-2" class="text-brand-emerald font-black">...</span><span class="text-indigo-400/40">]</span>
+        </div>
+      </div>
+
+      <!-- UNIVERSAL TOP KPI GRID -->
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Metric 1 (Indigo/Purple Theme) -->
+        <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-300 group">
+          <div class="flex justify-between items-start">
+            <div>
+              <p id="ui-kpi-1-label" class="text-xs uppercase font-semibold text-indigo-400 tracking-wider">...</p>
+              <h3 id="ui-kpi-1-value" class="text-4xl font-extrabold text-indigo-500 mt-1">...</h3>
+            </div>
+            <div class="w-12 h-12 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden"><img class="w-full h-full object-contain scale-110" src="https://i.postimg.cc/47YwXN6z/TCHB-ICON-1-white.png"></div>
+          </div>
+          <p id="ui-kpi-1-desc" class="text-xs text-gray-300 mt-4 leading-relaxed">...</p>
+        </div>
+        <!-- Metric 2 (Emerald Theme) -->
+        <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-300 group">
+          <div class="flex justify-between items-start">
+            <div>
+              <p id="ui-kpi-2-label" class="text-xs uppercase font-semibold text-brand-emerald tracking-wider">...</p>
+              <h3 id="ui-kpi-2-value" class="text-4xl font-extrabold text-emerald-400 mt-1">...</h3>
+            </div>
+            <div class="w-12 h-12 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden"><img class="w-full h-full object-contain scale-110" src="https://i.postimg.cc/47YwXN6z/TCHB-ICON-1-white.png"></div>
+          </div>
+          <p id="ui-kpi-2-desc" class="text-xs text-gray-300 mt-4 leading-relaxed">...</p>
+        </div>
+        <!-- Metric 3 (Gold Theme) -->
+        <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-300 group">
+          <div class="flex justify-between items-start">
+            <div>
+              <p id="ui-kpi-3-label" class="text-xs uppercase font-semibold text-brand-gold tracking-wider">...</p>
+              <h3 id="ui-kpi-3-value" class="text-4xl font-extrabold text-amber-400 mt-1">...</h3>
+            </div>
+            <div class="w-12 h-12 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden"><img class="w-full h-full object-contain scale-110" src="https://i.postimg.cc/47YwXN6z/TCHB-ICON-1-white.png"></div>
+          </div>
+          <p id="ui-kpi-3-desc" class="text-xs text-gray-300 mt-4 leading-relaxed">...</p>
+        </div>
+      </div>
+
+      <!-- TABLES (Hidden by default, shown by dealType) -->
+      <div id="module-creative-table" class="hidden-module mt-8 bg-gray-900/40 rounded-2xl border border-gray-800 overflow-hidden">
+        <div class="p-6 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 flex justify-between items-center">
+          <div><h3 class="text-lg font-bold text-white">Subject-To Deal Architecture</h3><p class="text-xs text-gray-400">Comparing Sub2 against standard market debt.</p></div>
+          <button onclick="window.print()" class="no-print bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all">Export PDF</button>
+        </div>
+        <div class="overflow-x-auto"><table class="w-full text-center text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase"><tr><th class="px-6 py-4">Metric</th><th class="px-6 py-4 text-indigo-400 bg-indigo-950/20 font-bold">🔥 Proposed Deal</th><th class="px-6 py-4">Standard Market</th><th class="px-6 py-4 text-brand-emerald">Net Advantage</th></tr></thead><tbody id="ui-creative-tbody" class="divide-y divide-gray-800"></tbody></table></div>
+      </div>
+
+      <div id="module-wholesale-table" class="hidden-module mt-8 bg-gray-900/40 rounded-2xl border border-gray-800 overflow-hidden">
+        <div class="p-6 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 flex justify-between items-center">
+          <div><h3 class="text-lg font-bold text-white" id="ws-table-title">Acquisition & Profitability</h3><p class="text-xs text-gray-400">Direct spread analysis and expected ROI metrics.</p></div>
+          <button onclick="window.print()" class="no-print bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all">Export PDF</button>
+        </div>
+        <div class="overflow-x-auto"><table class="w-full text-center text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase"><tr><th class="px-6 py-4 text-left pl-6">Acquisition & Costs</th><th class="px-6 py-4 text-right">Amount</th><th class="px-6 py-4 text-left border-l border-gray-800 pl-6">Exit Strategy & Returns</th><th class="px-6 py-4 text-right pr-6">Amount</th></tr></thead><tbody id="ui-wholesale-tbody" class="divide-y divide-gray-800"></tbody></table></div>
+      </div>
+
+      <div id="module-novation-table" class="hidden-module mt-8 bg-gray-900/40 rounded-2xl border border-gray-800 overflow-hidden">
+        <div class="p-6 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 flex justify-between items-center">
+          <div><h3 class="text-lg font-bold text-white">Novation Joint Venture Structure</h3><p class="text-xs text-gray-400">Partnership breakdown, capital requirements, and margins.</p></div>
+          <button onclick="window.print()" class="no-print bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all">Export PDF</button>
+        </div>
+        <div class="overflow-x-auto"><table class="w-full text-center text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase"><tr><th class="px-6 py-4 text-left pl-6">Capital & Obligations</th><th class="px-6 py-4 text-right">Amount</th><th class="px-6 py-4 text-left border-l border-gray-800 pl-6">Retail Exit & Distributions</th><th class="px-6 py-4 text-right pr-6">Amount</th></tr></thead><tbody id="ui-novation-tbody" class="divide-y divide-gray-800"></tbody></table></div>
+      </div>
+
+      <div id="module-seller-finance-table" class="hidden-module mt-8 bg-gray-900/40 rounded-2xl border border-gray-800 overflow-hidden">
+        <div class="p-6 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 flex justify-between items-center">
+          <div><h3 class="text-lg font-bold text-white">Seller Finance / Wrap Amortization</h3><p class="text-xs text-gray-400">Direct comparison of owner financing vs market lending.</p></div>
+          <button onclick="window.print()" class="no-print bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all">Export PDF</button>
+        </div>
+        <div class="overflow-x-auto"><table class="w-full text-center text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase"><tr><th class="px-6 py-4 text-left pl-6">Deal Metrics</th><th class="px-6 py-4 text-indigo-400 bg-indigo-950/20 font-bold">Owner Financed</th><th class="px-6 py-4 border-l border-gray-800">Standard Loan</th><th class="px-6 py-4 text-brand-emerald">Advantage</th></tr></thead><tbody id="ui-seller-finance-tbody" class="divide-y divide-gray-800"></tbody></table></div>
+      </div>
+
+      <div id="module-rental-table" class="hidden-module mt-8 bg-gray-900/40 rounded-2xl border border-gray-800 overflow-hidden">
+        <div class="p-6 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 flex justify-between items-center">
+          <div><h3 class="text-lg font-bold text-white">Rental Portfolio Operations</h3><p class="text-xs text-gray-400">Cash-on-cash and Cap Rate operational analysis.</p></div>
+          <button onclick="window.print()" class="no-print bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all">Export PDF</button>
+        </div>
+        <div class="overflow-x-auto"><table class="w-full text-center text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase"><tr><th class="px-6 py-4 text-left pl-6">Operational Income & Expense</th><th class="px-6 py-4 text-right">Amount</th><th class="px-6 py-4 text-left border-l border-gray-800 pl-6">Yield & Performance</th><th class="px-6 py-4 text-right pr-6">Metric</th></tr></thead><tbody id="ui-rental-tbody" class="divide-y divide-gray-800"></tbody></table></div>
+      </div>
+
+    </div>
+
+    <div class="print-page-2 mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-gray-900/20 p-6 rounded-xl border border-gray-800 flex gap-4 text-left">
+          <div class="w-10 h-10 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden"><img class="w-full h-full object-contain scale-110" src="https://i.postimg.cc/47YwXN6z/TCHB-ICON-1-white.png"></div>
+          <div>
+            <h4 id="ui-narrative-1-title" class="text-base font-extrabold text-white">...</h4>
+            <p id="ui-narrative-1-desc" class="text-xs text-gray-400 mt-2 leading-relaxed">...</p>
+          </div>
+        </div>
+        <div class="bg-gray-900/20 p-6 rounded-xl border border-gray-800 flex gap-4 text-left">
+          <div class="w-10 h-10 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden"><img class="w-full h-full object-contain scale-110" src="https://i.postimg.cc/47YwXN6z/TCHB-ICON-1-white.png"></div>
+          <div>
+            <h4 id="ui-narrative-2-title" class="text-base font-extrabold text-white">...</h4>
+            <p id="ui-narrative-2-desc" class="text-xs text-gray-400 mt-2 leading-relaxed">...</p>
+          </div>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div id="module-charts" class="hidden-module print-page-3 mt-12">
+      <div class="text-center mb-6 no-print md:block">
+        <span class="text-indigo-400 font-bold uppercase text-xs tracking-wider">Visual Performance Analytics</span>
+        <h3 class="text-2xl font-black text-white mt-1">Direct Comparative Visualizations</h3>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800">
+          <h3 class="text-base font-bold text-white mb-1">Monthly Payment Structuring</h3>
+          <div class="relative h-64 w-full chart-container-print"><canvas id="paymentChart"></canvas></div>
+        </div>
+        <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800">
+          <h3 class="text-base font-bold text-white mb-1">Interest Accumulation Contrast</h3>
+          <div class="relative h-64 w-full chart-container-print"><canvas id="interestChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="module-doughnut-chart" class="hidden-module print-page-3 mt-12">
+      <div class="text-center mb-6 no-print md:block">
+        <span class="text-brand-emerald font-bold uppercase text-xs tracking-wider">Capital Architecture</span>
+        <h3 class="text-2xl font-black text-white mt-1">Capital Slice Breakdown</h3>
+      </div>
+      <div class="flex justify-center">
+        <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 w-full max-w-2xl">
+          <div class="relative h-80 w-full chart-container-print flex justify-center"><canvas id="doughnutChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="mt-12 pt-6 border-t border-gray-800 text-center text-xs text-gray-500 flex flex-col items-center gap-2">
+      <div class="flex items-center gap-2 justify-center">
+        <img class="w-5 h-5" src="https://i.postimg.cc/47YwXN6z/TCHB-ICON-1-white.png" alt="TCHB Icon">
+        <span class="font-bold text-gray-400">TOTAL CASH HOME BUYERS</span> • <span>Underwriting Division</span>
+      </div>
+      <div class="flex gap-4 text-xs mt-1 mb-1">
+        <a href="mailto:Carlos@totalchb.com" class="hover:text-indigo-400">Carlos@totalchb.com</a> | <a href="tel:+17035854331" class="hover:text-indigo-400">+1 (703) 585-4331</a>
+      </div>
+      <p class="max-w-md text-[10px] mx-auto">Analysis constructed for informational real estate portfolio modeling purposes based on verified underwriting metrics.</p>
+    </footer>
+
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwUPnhj0leETYDP86FpvOOtsyF1Oqa8GgcBm-spsX9xcLvQE2F4LDnjR7IUUsbpw7uQ/exec";
+    const LOGGING_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbw5XeS-cpbP8vBrdCM32ZR5cK3kxf66TpdVC8NyWNK4HbYqxh8eWFqN0U0xss8zuWZq/exec";
+    
+    let currentDBRow = null;
+    let urlPropId = null;
+
+    Chart.register(ChartDataLabels);
+
+    // ----------------------------------------------------
+    // STARTUP / DATA FETCHING
+    // ----------------------------------------------------
+    window.onload = async function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlPropId = urlParams.get('id');
+
+        if (!urlPropId) {
+            document.getElementById('fullPageLoader').innerHTML = '<p class="text-red-400 font-bold">Error: No Property ID specified in URL.</p>';
+            return;
+        }
+
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            
+            if (data.error) throw new Error(data.error);
+
+            currentDBRow = data.properties.find(p => p.Property_ID === urlPropId);
+
+            if (!currentDBRow) {
+                document.getElementById('fullPageLoader').innerHTML = '<p class="text-red-400 font-bold">Error: Property not found in database.</p>';
+                return;
+            }
+
+            checkGate();
+        } catch(err) {
+            document.getElementById('fullPageLoader').innerHTML = `<p class="text-red-400 font-bold">Connection Error: ${err.message}</p>`;
+        }
+        
+        // Start animation engine
+        resizeCanvas();
+        requestAnimationFrame(animateGrid);
+    };
+
+    // ----------------------------------------------------
+    // SECURITY GATE
+    // ----------------------------------------------------
+    function checkGate() {
+        const sessionKey = 'tchb_access_granted_' + urlPropId;
+        if (sessionStorage.getItem(sessionKey) === 'true') {
+            unlockPage();
+        } else {
+            // Document is locked, hide loader, show gate
+            document.getElementById('fullPageLoader').classList.add('hidden');
+        }
+    }
+
+    function verifyGateKey() {
+        const emailInput = document.getElementById('gateEmailInput').value.trim();
+        const keyInput = document.getElementById('gateAccessKeyInput').value.trim();
+        const errorMsg = document.getElementById('gateErrorMessage');
+        const modalBox = document.getElementById('gateModalBox');
+
+        let status = "FAILED";
+        let reason = "Unknown";
+        let authorized = false;
+
+        if (!emailInput || !emailInput.includes('@')) {
+            reason = "Invalid or Missing Email";
+            errorMsg.innerText = "Please enter a valid email address.";
+        } else if (keyInput !== currentDBRow.Access_Password) {
+            reason = "Incorrect Security Key";
+            errorMsg.innerText = "Incorrect security authorization code.";
+        } else {
+            status = "SUCCESS"; reason = "Valid Credentials"; authorized = true;
+        }
+
+        if (typeof LOGGING_WEBHOOK_URL !== 'undefined') {
+            fetch(LOGGING_WEBHOOK_URL, {
+                method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'log_access', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, keyUsed: keyInput, status: status, reason: reason })
+            }).catch(e => console.log("Log fail"));
+        }
+
+        if (authorized) {
+            sessionStorage.setItem('tchb_access_granted_' + urlPropId, 'true');
+            unlockPage();
+        } else {
+            errorMsg.classList.remove('hidden');
+            modalBox.classList.add('shake-element');
+            setTimeout(() => modalBox.classList.remove('shake-element'), 400);
+        }
+    }
+
+    function unlockPage() {
+        document.documentElement.classList.add('gate-unlocked');
+        document.getElementById('fullPageLoader').classList.add('hidden');
+        document.getElementById('mainContent').classList.remove('hidden');
+
+        // MAP GOOGLE SHEET TO UI
+        const dealTypeRaw = (currentDBRow.Deal_Type || '').toLowerCase().replace(/ /g, '_');
+        const badgeStyle = getDealThemeClass(dealTypeRaw);
+
+        const mappedData = {
+            dealType: dealTypeRaw,
+            badgeText: currentDBRow.Badge_Text || 'Deal Proposal',
+            badgeColor: badgeStyle,
+            address: currentDBRow.Address,
+            cityState: currentDBRow.City_State,
+            pillPrice: currentDBRow.Pill_Price,
+            pillDetail1: currentDBRow.Pill_Detail_1,
+            pillDetail2: currentDBRow.Pill_Detail_2,
+            
+            kpi1Label: currentDBRow.KPI_1_Label, kpi1Value: currentDBRow.KPI_1_Value, kpi1Desc: currentDBRow.KPI_1_Desc,
+            kpi2Label: currentDBRow.KPI_2_Label, kpi2Value: currentDBRow.KPI_2_Value, kpi2Desc: currentDBRow.KPI_2_Desc,
+            kpi3Label: currentDBRow.KPI_3_Label, kpi3Value: currentDBRow.KPI_3_Value, kpi3Desc: currentDBRow.KPI_3_Desc,
+            nav1Title: currentDBRow.Nav_1_Title, nav1Desc: currentDBRow.Nav_1_Desc,
+            nav2Title: currentDBRow.Nav_2_Title, nav2Desc: currentDBRow.Nav_2_Desc,
+
+            // Creative
+            sub2Rate: currentDBRow.CR_Sub2_Rate, marketRate: currentDBRow.CR_Market_Rate,
+            sub2PI: parseFloat(currentDBRow.CR_Sub2_PI) || 0, marketPI: parseFloat(currentDBRow.CR_Market_PI) || 0,
+            escrow: parseFloat(currentDBRow.CR_Escrow) || 0, totalInterestSaved: currentDBRow.CR_Total_Interest_Saved,
+            
+            // Wholesale / Flip
+            purchasePrice: currentDBRow.WS_Purchase_Price, closingCosts: currentDBRow.WS_Closing_Costs,
+            repairBudget: currentDBRow.WS_Repair_Budget, holdingCosts: currentDBRow.WS_Holding_Costs,
+            totalBasis: currentDBRow.WS_Total_Basis, arv: currentDBRow.WS_ARV,
+            realtorFees: currentDBRow.WS_Realtor_Fees, netReturn: currentDBRow.WS_Net_Return,
+            
+            // Novation
+            nvSellerBase: currentDBRow.NV_Seller_Guarantee, nvRehab: currentDBRow.NV_Rehab_Capital,
+            nvLegal: currentDBRow.NV_Legal_Holding, nvTotalRisk: currentDBRow.NV_Total_Capital_Risk,
+            nvARV: currentDBRow.NV_Retail_ARV, nvDispCosts: currentDBRow.NV_Disposition_Costs,
+            nvGrossProfit: currentDBRow.NV_Total_Gross_Profit, nvNetROI: currentDBRow.NV_Investor_Net,
+            
+            // Seller Finance
+            sfDownPayment: currentDBRow.SF_Down_Payment, sfAmort: currentDBRow.SF_Amort_Term,
+            sfBalloon: currentDBRow.SF_Balloon_Term, sfPayment: currentDBRow.SF_Monthly_Payment,
+            
+            // Rental
+            rnPrice: currentDBRow.RN_Purchase_Price, rnNOI: currentDBRow.RN_NOI,
+            rnRent: currentDBRow.RN_Gross_Rent, rnCapRate: currentDBRow.RN_Cap_Rate,
+            rnOpEx: currentDBRow.RN_OpEx, rnCoC: currentDBRow.RN_Cash_on_Cash
+        };
+
+        if(currentDBRow.Status && currentDBRow.Status.toUpperCase() === 'SOLD') {
+            document.getElementById('soldOverlayBanner').classList.remove('hidden-module');
+        }
+
+        renderUniversalPage(mappedData);
+    }
+
+    function getDealThemeClass(t) {
+        if (t === 'creative') return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
+        if (t === 'wholesale') return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+        if (t === 'fix_flip') return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+        if (t === 'novation') return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+        if (t === 'seller_finance') return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+        if (t === 'rental') return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20';
+        return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+    }
+
+    // ----------------------------------------------------
+    // RENDERING LOGIC
+    // ----------------------------------------------------
+    function renderUniversalPage(data) {
+        document.getElementById('ui-badge').className = `inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border mb-2 uppercase tracking-wide ${data.badgeColor}`;
+        document.getElementById('ui-badge').innerText = data.badgeText;
+        document.getElementById('ui-address').innerText = data.address;
+        document.getElementById('ui-citystate').innerText = data.cityState;
+
+        document.getElementById('ui-pill-price').innerText = data.pillPrice;
+        document.getElementById('ui-pill-detail-1').innerText = data.pillDetail1;
+        document.getElementById('ui-pill-detail-2').innerText = data.pillDetail2;
+
+        document.getElementById('ui-kpi-1-label').innerText = data.kpi1Label; document.getElementById('ui-kpi-1-value').innerText = data.kpi1Value; document.getElementById('ui-kpi-1-desc').innerText = data.kpi1Desc;
+        document.getElementById('ui-kpi-2-label').innerText = data.kpi2Label; document.getElementById('ui-kpi-2-value').innerText = data.kpi2Value; document.getElementById('ui-kpi-2-desc').innerText = data.kpi2Desc;
+        document.getElementById('ui-kpi-3-label').innerText = data.kpi3Label; document.getElementById('ui-kpi-3-value').innerText = data.kpi3Value; document.getElementById('ui-kpi-3-desc').innerText = data.kpi3Desc;
+
+        document.getElementById('ui-narrative-1-title').innerText = data.nav1Title; document.getElementById('ui-narrative-1-desc').innerText = data.nav1Desc;
+        document.getElementById('ui-narrative-2-title').innerText = data.nav2Title; document.getElementById('ui-narrative-2-desc').innerText = data.nav2Desc;
+
+        document.querySelectorAll('.hidden-module').forEach(el => el.classList.add('hidden-module'));
+        if(currentDBRow.Status && currentDBRow.Status.toUpperCase() === 'SOLD') document.getElementById('soldOverlayBanner').classList.remove('hidden-module');
+
+        switch (data.dealType) {
+            case 'creative':
+                document.getElementById('module-creative-table').classList.remove('hidden-module');
+                document.getElementById('module-charts').classList.remove('hidden-module');
+                renderCreativeTable(data); renderLineCharts(data); break;
+            case 'seller_finance':
+                document.getElementById('module-seller-finance-table').classList.remove('hidden-module');
+                document.getElementById('module-charts').classList.remove('hidden-module');
+                renderSellerFinanceTable(data); renderLineCharts(data); break;
+            case 'wholesale':
+            case 'fix_flip':
+                document.getElementById('module-wholesale-table').classList.remove('hidden-module');
+                document.getElementById('ws-table-title').innerText = data.dealType === 'wholesale' ? 'Wholesale Acquisition' : 'Fix & Flip Profitability';
+                document.getElementById('module-doughnut-chart').classList.remove('hidden-module');
+                renderWholesaleTable(data); renderDoughnutChart(data, 'wholesale'); break;
+            case 'novation':
+                document.getElementById('module-novation-table').classList.remove('hidden-module');
+                document.getElementById('module-doughnut-chart').classList.remove('hidden-module');
+                renderNovationTable(data); renderDoughnutChart(data, 'novation'); break;
+            case 'rental':
+                document.getElementById('module-rental-table').classList.remove('hidden-module');
+                document.getElementById('module-doughnut-chart').classList.remove('hidden-module');
+                renderRentalTable(data); renderDoughnutChart(data, 'rental'); break;
+        }
+    }
+
+    function renderCreativeTable(data) {
+        document.getElementById('ui-creative-tbody').innerHTML = `
+            <tr><td class="px-6 py-4 font-semibold text-gray-200">Interest %</td><td class="px-6 py-4 font-bold text-brand-emerald bg-indigo-950/10 text-lg">${data.sub2Rate}</td><td class="px-6 py-4 text-red-400 text-lg font-medium">${data.marketRate}</td><td class="px-6 py-4 text-brand-emerald font-bold">Massive Advantage</td></tr>
+            <tr class="bg-gray-950/20"><td class="px-6 py-4 font-semibold text-gray-200">Principal & Interest (P&I)</td><td class="px-6 py-4 font-bold text-white bg-indigo-950/10">$${data.sub2PI.toFixed(2)}</td><td class="px-6 py-4">$${data.marketPI.toFixed(2)}</td><td class="px-6 py-4 text-brand-emerald font-semibold">Lower Overhead</td></tr>
+            <tr class="bg-brand-emerald/10"><td class="px-6 py-4 font-bold text-white">Interest Paid Over Life</td><td class="px-6 py-4 font-bold text-brand-emerald bg-indigo-950/10">Protected</td><td class="px-6 py-4 text-red-400">High Exposure</td><td class="px-6 py-4 text-brand-emerald font-extrabold">+${data.totalInterestSaved} Net Savings</td></tr>
+        `;
+    }
+
+    function renderSellerFinanceTable(data) {
+        document.getElementById('ui-seller-finance-tbody').innerHTML = `
+            <tr><td class="px-6 py-4 font-semibold text-gray-200 text-left pl-6">Down Payment Req.</td><td class="px-6 py-4 font-bold text-brand-emerald bg-indigo-950/10 text-lg">${data.sfDownPayment}</td><td class="px-6 py-4 text-gray-400 border-l border-gray-800 text-lg font-medium">Standard 20%</td><td class="px-6 py-4 text-brand-emerald font-bold">Lower Entry Barrier</td></tr>
+            <tr class="bg-gray-950/20"><td class="px-6 py-4 font-semibold text-gray-200 text-left pl-6">Interest Rate</td><td class="px-6 py-4 font-bold text-white bg-indigo-950/10">${data.sub2Rate || data.marketRate || 'N/A'}</td><td class="px-6 py-4 border-l border-gray-800 text-red-400">Market Avg</td><td class="px-6 py-4 text-brand-emerald font-semibold">Yield Protection</td></tr>
+            <tr><td class="px-6 py-4 font-semibold text-gray-200 text-left pl-6">Amortization / Balloon</td><td class="px-6 py-4 font-bold text-white bg-indigo-950/10">${data.sfAmort} / ${data.sfBalloon}</td><td class="px-6 py-4 border-l border-gray-800">30 Yrs / None</td><td class="px-6 py-4 text-indigo-400 font-semibold">Flexible Terms</td></tr>
+            <tr class="bg-brand-emerald/10"><td class="px-6 py-4 font-bold text-white text-left pl-6">Monthly P&I Obligation</td><td class="px-6 py-4 font-bold text-brand-emerald bg-indigo-950/10 text-lg">${data.sfPayment}</td><td class="px-6 py-4 border-l border-gray-800 text-red-400 text-lg">Higher</td><td class="px-6 py-4 text-brand-emerald font-extrabold">Superior DSCR</td></tr>
+        `;
+    }
+
+    function renderWholesaleTable(data) {
+        document.getElementById('ui-wholesale-tbody').innerHTML = `
+            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Base Purchase Price</td><td class="px-6 py-4 font-bold text-white bg-gray-900/50 text-right">${data.purchasePrice || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Estimated ARV</td><td class="px-6 py-4 font-bold text-indigo-400 bg-gray-900/50 text-right pr-6">${data.arv || '$0'}</td></tr>
+            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Est. Closing Costs (Buy)</td><td class="px-6 py-4 font-medium text-gray-400 bg-gray-900/50 text-right">${data.closingCosts || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Realtor/Disposition Fees</td><td class="px-6 py-4 font-medium text-red-400 bg-gray-900/50 text-right pr-6">${data.realtorFees || '$0'}</td></tr>
+            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Rehab / Repair Budget</td><td class="px-6 py-4 font-bold text-brand-gold bg-gray-900/50 text-right">${data.repairBudget || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Holding & Carry Costs</td><td class="px-6 py-4 font-medium text-gray-400 bg-gray-900/50 text-right pr-6">${data.holdingCosts || '$0'}</td></tr>
+            <tr class="bg-gray-950/40 border-t border-gray-700"><td class="px-6 py-5 font-bold text-white text-lg text-left pl-6">Total Cost Basis</td><td class="px-6 py-5 font-extrabold text-white bg-gray-900/80 text-lg text-right">${data.totalBasis || '$0'}</td><td class="px-6 py-5 font-bold text-brand-emerald border-l border-gray-800 pl-6 text-left text-lg">Projected Net Net Return</td><td class="px-6 py-5 font-black text-brand-emerald bg-emerald-900/20 text-xl text-right pr-6">${data.netReturn || '$0'}</td></tr>
+        `;
+    }
+
+    function renderNovationTable(data) {
+        document.getElementById('ui-novation-tbody').innerHTML = `
+            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Seller Base Guarantee</td><td class="px-6 py-4 font-bold text-white bg-gray-900/50 text-right">${data.nvSellerBase || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Retail Exit ARV</td><td class="px-6 py-4 font-bold text-indigo-400 bg-gray-900/50 text-right pr-6">${data.nvARV || '$0'}</td></tr>
+            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Rehab Capital Funded</td><td class="px-6 py-4 font-bold text-brand-gold bg-gray-900/50 text-right">${data.nvRehab || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Disposition Costs</td><td class="px-6 py-4 font-medium text-red-400 bg-gray-900/50 text-right pr-6">${data.nvDispCosts || '$0'}</td></tr>
+            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Legal & Carry Setup</td><td class="px-6 py-4 font-medium text-gray-400 bg-gray-900/50 text-right">${data.nvLegal || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Total Gross Profit</td><td class="px-6 py-4 font-bold text-white bg-gray-900/50 text-right pr-6">${data.nvGrossProfit || '$0'}</td></tr>
+            <tr class="bg-gray-950/40 border-t border-gray-700"><td class="px-6 py-5 font-bold text-red-400 text-lg text-left pl-6">Total Capital at Risk</td><td class="px-6 py-5 font-extrabold text-white bg-gray-900/80 text-lg text-right">${data.nvTotalRisk || '$0'}</td><td class="px-6 py-5 font-bold text-brand-emerald border-l border-gray-800 pl-6 text-left text-lg">Partner Net Split (ROI)</td><td class="px-6 py-5 font-black text-brand-emerald bg-emerald-900/20 text-xl text-right pr-6">${data.nvNetROI || '$0'}</td></tr>
+        `;
+    }
+
+    function renderRentalTable(data) {
+        document.getElementById('ui-rental-tbody').innerHTML = `
+            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Asset Base Price</td><td class="px-6 py-4 font-bold text-white bg-gray-900/50 text-right">${data.rnPrice || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Net Operating Income (NOI)</td><td class="px-6 py-4 font-bold text-indigo-400 bg-gray-900/50 text-right pr-6">${data.rnNOI || '$0'}</td></tr>
+            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Monthly Gross Rent</td><td class="px-6 py-4 font-bold text-brand-emerald bg-gray-900/50 text-right">${data.rnRent || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Cap Rate</td><td class="px-6 py-4 font-bold text-brand-gold bg-gray-900/50 text-right pr-6 text-lg">${data.rnCapRate || '0%'}</td></tr>
+            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Est. Monthly OpEx</td><td class="px-6 py-4 font-medium text-red-400 bg-gray-900/50 text-right">${data.rnOpEx || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Cash-on-Cash Return</td><td class="px-6 py-4 font-black text-brand-emerald bg-emerald-900/20 text-right pr-6 text-lg">${data.rnCoC || '0%'}</td></tr>
+        `;
+    }
+
+    let lineChart1, lineChart2, pieChart;
+
+    function renderLineCharts(data) {
+        if(lineChart1) lineChart1.destroy(); if(lineChart2) lineChart2.destroy();
+        
+        const ctxPayment = document.getElementById('paymentChart').getContext('2d');
+        lineChart1 = new Chart(ctxPayment, {
+            type: 'bar',
+            data: { labels: ['Proposed Deal', "Standard Market"], datasets: [
+                { label: 'P&I', data: [data.sub2PI, data.marketPI], backgroundColor: '#4f46e5' },
+                { label: 'Escrow', data: [data.escrow, data.escrow], backgroundColor: '#10b981' }
+            ]},
+            options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }
+        });
+
+        // Simple mock curve calculation based on P&I for visualization
+        const m1 = data.marketPI * 12; const s1 = data.sub2PI * 12;
+        const ctxInterest = document.getElementById('interestChart').getContext('2d');
+        lineChart2 = new Chart(ctxInterest, {
+            type: 'line',
+            data: { labels: ['Year 1', 'Year 10', 'Year 20', 'Year 30'], datasets: [
+                { label: "Standard Market", data: [m1, m1*7, m1*13, m1*16], borderColor: '#dc2626', fill: true, backgroundColor: 'rgba(220, 38, 38, 0.1)' },
+                { label: 'Proposed Deal', data: [s1, s1*4, s1*7, s1*9], borderColor: '#10b981', fill: true, backgroundColor: 'rgba(16, 185, 129, 0.1)' }
+            ]},
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+
+    function renderDoughnutChart(data, type) {
+        if(pieChart) pieChart.destroy();
+        const ctx = document.getElementById('doughnutChart').getContext('2d');
+        let chartLabels = []; let chartData = []; let chartColors = [];
+        const clean = (val) => parseInt((val || '0').replace(/[^0-9]/g, '')) || 0;
+        
+        if (type === 'wholesale' || type === 'fix_flip') {
+            chartLabels = ['Purchase/Basis', 'Rehab Budget', 'Hold/Close Fees', 'Net Profit'];
+            chartData = [clean(data.purchasePrice), clean(data.repairBudget), clean(data.closingCosts) + clean(data.holdingCosts), clean(data.netReturn)];
+            chartColors = ['#4f46e5', '#f59e0b', '#dc2626', '#10b981'];
+        } else if (type === 'novation') {
+            chartLabels = ['Seller Guarantee', 'Rehab Capital', 'Legal/Disp Fees', 'Investor Net ROI'];
+            chartData = [clean(data.nvSellerBase), clean(data.nvRehab), clean(data.nvLegal) + clean(data.nvDispCosts), clean(data.nvNetROI)];
+            chartColors = ['#6366f1', '#f59e0b', '#dc2626', '#10b981'];
+        } else if (type === 'rental') {
+            chartLabels = ['Annual Net Income (NOI)', 'Annual OpEx', 'Annual Vacancy/Maint'];
+            chartData = [clean(data.rnNOI), clean(data.rnOpEx) * 12, clean(data.rnOpEx) * 3];
+            chartColors = ['#10b981', '#dc2626', '#f59e0b'];
+        }
+
+        pieChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: chartColors, borderWidth: 0, hoverOffset: 10 }] },
+            options: {
+                responsive: true, maintainAspectRatio: false, cutout: '65%',
+                plugins: { legend: { position: 'bottom', labels: { color: '#f3f4f6' } }, datalabels: { color: '#fff', font: { weight: 'bold', size: 12 }, formatter: (v) => '$' + v.toLocaleString() } }
+            }
+        });
+    }
+
+    // ----------------------------------------------------
+    // ANIMATION ENGINE (EMERALD, CRIMSON, INDIGO)
+    // ----------------------------------------------------
+    const canvas = document.getElementById('gridCanvas');
+    const ctx = canvas.getContext('2d');
+    let gridSize = 55; let sparks = []; let lastSpanSpawn = 0;
+    const brandColors = [{ r: 79, g: 70, b: 229 }, { r: 220, g: 38, b: 38 }, { r: 16, g: 185, b: 129 }];
+
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resizeCanvas);
+
+    function createSpark(x = null, y = null, isClick = false) {
+        const isHorizontal = Math.random() > 0.5;
+        let startX, startY, dirX, dirY;
+        if (isClick && x !== null && y !== null) {
+            startX = Math.floor(x / gridSize) * gridSize; startY = Math.floor(y / gridSize) * gridSize;
+            dirX = isHorizontal ? (Math.random() > 0.5 ? 1 : -1) : 0; dirY = isHorizontal ? 0 : (Math.random() > 0.5 ? 1 : -1);
+        } else {
+            if (isHorizontal) {
+                startX = Math.random() < 0.5 ? 0 : canvas.width; startY = Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize;
+                dirX = startX === 0 ? 1 : -1; dirY = 0;
+            } else {
+                startX = Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize; startY = Math.random() < 0.5 ? 0 : canvas.height;
+                dirX = 0; dirY = startY === 0 ? 1 : -1;
+            }
+        }
+        const color = brandColors[Math.floor(Math.random() * brandColors.length)];
+        sparks.push({ startX, startY, targetX: startX + dirX * gridSize, targetY: startY + dirY * gridSize, dirX, dirY, progress: 0, speed: 0.02 + Math.random() * 0.03, life: 1, decay: 0.005 + Math.random() * 0.01, history: [], color: color });
+    }
+
+    canvas.addEventListener('mousedown', (e) => { for(let i=0; i<3; i++) createSpark(e.clientX, e.clientY, true); });
+
+    function drawSparks() {
+        ctx.lineCap = 'round';
+        sparks.forEach(spark => {
+            const c = spark.color;
+            ctx.beginPath(); ctx.moveTo(spark.startX, spark.startY);
+            ctx.lineTo(spark.startX + (spark.targetX - spark.startX) * spark.progress, spark.startY + (spark.targetY - spark.startY) * spark.progress);
+            ctx.strokeStyle = `rgba(${c.r}, ${c.g}, ${c.b}, ${spark.life})`; ctx.lineWidth = 2; ctx.stroke();
+            spark.history.forEach((point, index) => {
+                ctx.beginPath(); ctx.moveTo(point.x, point.y); ctx.lineTo(point.nextX, point.nextY);
+                ctx.strokeStyle = `rgba(${c.r}, ${c.g}, ${c.b}, ${spark.life * (index / spark.history.length) * 0.5})`;
+                ctx.lineWidth = 2 * (index / spark.history.length); ctx.stroke();
+            });
+            ctx.shadowColor = `rgb(${c.r}, ${c.g}, ${c.b})`; ctx.shadowBlur = 10; ctx.beginPath();
+            const currentX = spark.startX + (spark.targetX - spark.startX) * spark.progress; const currentY = spark.startY + (spark.targetY - spark.startY) * spark.progress;
+            ctx.arc(currentX, currentY, 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${Math.min(c.r+40,255)}, ${Math.min(c.g+40,255)}, ${Math.min(c.b+40,255)}, ${spark.life})`;
+            ctx.fill(); ctx.shadowBlur = 0;
+        });
+    }
+
+    function animateGrid(timestamp) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = 'rgba(79, 70, 229, 0.07)'; ctx.lineWidth = 1; ctx.beginPath();
+        for (let x = 0; x < canvas.width; x += gridSize) { ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); }
+        for (let y = 0; y < canvas.height; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); }
+        ctx.stroke();
+
+        drawSparks();
+        if (timestamp - lastSpanSpawn > 500 && sparks.length < 32) { createSpark(); lastSpanSpawn = timestamp; }
+
+        for (let i = sparks.length - 1; i >= 0; i--) {
+            let spark = sparks[i]; spark.progress += spark.speed; spark.life -= spark.decay;
+            if (spark.history.length > 5) spark.history.shift();
+            spark.history.push({ x: spark.startX + (spark.targetX - spark.startX) * spark.progress, y: spark.startY + (spark.targetY - spark.startY) * spark.progress, nextX: spark.startX + (spark.targetX - spark.startX) * (spark.progress + 0.1), nextY: spark.startY + (spark.targetY - spark.startY) * (spark.progress + 0.1) });
+            if (spark.life <= 0) { sparks.splice(i, 1); } 
+            else if (spark.progress >= 1) {
+                spark.startX = spark.targetX; spark.startY = spark.targetY; spark.progress = 0;
+                if (Math.random() < 0.3 && sparks.length < 32) {
+                    let isHorizontal = spark.dirX !== 0; let branchDirX = isHorizontal ? 0 : (Math.random() > 0.5 ? 1 : -1); let branchDirY = isHorizontal ? (Math.random() > 0.5 ? 1 : -1) : 0;
+                    sparks.push({ startX: spark.startX, startY: spark.startY, targetX: spark.startX + branchDirX * gridSize, targetY: spark.startY + branchDirY * gridSize, dirX: branchDirX, dirY: branchDirY, progress: 0, speed: spark.speed, life: spark.life * 0.75, decay: spark.decay, history: [], color: spark.color });
+                }
+                spark.targetX = spark.startX + spark.dirX * gridSize; spark.targetY = spark.startY + spark.dirY * gridSize;
+            }
+        }
+        requestAnimationFrame(animateGrid);
+    }
+  </script>
+</body>
+</html>
