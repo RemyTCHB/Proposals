@@ -42,9 +42,20 @@
     .shake-element { animation: shake 0.4s ease-in-out; }
 
     #mouseGlow {
-        position: fixed; inset: 0; pointer-events: none; z-index: 1;
-        background: radial-gradient(220px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh), rgba(79,70,229,0.15) 0%, rgba(16,185,129,0.08) 40%, rgba(220,38,38,0.02) 60%, transparent 80%);
+        position: fixed; left: 0; top: 0; pointer-events: none; z-index: 1;
+        width: 220px; height: 220px;
+        transform: translate(calc(var(--mouse-x, 50vw) - 110px), calc(var(--mouse-y, 50vh) - 110px));
         opacity: 0; transition: opacity 0.5s ease; mix-blend-mode: screen;
+    }
+    #mouseGlow::before {
+        content: ""; position: absolute; inset: 0; border-radius: 50%;
+        background: linear-gradient(to right, #4f46e5, #10b981, #dc2626, #10b981, #4f46e5);
+        background-size: 300% 100%; filter: blur(40px); opacity: 0.35;
+        animation: pan-x 6s linear infinite, mouse-glow-pulse 3s ease-in-out infinite;
+    }
+    @keyframes mouse-glow-pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(0.75); }
     }
     
     body, a, button, input, [onclick], .cursor-pointer, .cursor-not-allowed { cursor: none !important; }
@@ -371,6 +382,9 @@
     }
 
     window.onload = async function() {
+        resizeCanvas();
+        requestAnimationFrame(animateGrid);
+
         const urlParams = new URLSearchParams(window.location.search);
         urlPropId = urlParams.get('id');
 
@@ -395,9 +409,6 @@
         } catch(err) {
             document.getElementById('fullPageLoader').innerHTML = `<p class="text-red-400 font-bold">Connection Error: ${err.message}</p>`;
         }
-        
-        resizeCanvas();
-        requestAnimationFrame(animateGrid);
     };
 
     function checkGate() {
