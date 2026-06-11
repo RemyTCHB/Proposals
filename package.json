@@ -1,0 +1,23 @@
+{
+  "name": "property-portal",
+  "version": "1.0.0",
+  "description": "TCHB Property Portal (Investor Network)",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RemyTCHB/Property-Portal.git"
+  },
+  "keywords": ["property", "real-estate", "investment", "portal"],
+  "author": "TCHB",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RemyTCHB/Property-Portal/issues"
+  },
+  "homepage": "https://github.com/RemyTCHB/Property-Portal#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
