@@ -1,0 +1,15 @@
+{
+  "name": "property-portal",
+  "version": "1.0.0",
+  "description": "TCHB Property Portal - Investor Network",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": ["property", "portal", "real-estate"],
+  "author": "TCHB",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/analytics": "^1.4.1"
+  }
+}
