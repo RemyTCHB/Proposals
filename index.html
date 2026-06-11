@@ -71,6 +71,20 @@
             100% { background-position: 0% center; }
         }
 
+        .animate-text-gradient-pulse {
+            background: linear-gradient(to right, #4f46e5, #10b981, #dc2626, #10b981, #4f46e5);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            animation: pan-x 6s linear infinite, text-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes text-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
         /* NEW LOADER STYLES */
         .gradient-ring-border {
             position: absolute;
@@ -187,7 +201,7 @@
                 <div class="gradient-ring-border z-10"></div>
                 <img src="icon.svg" alt="Loading" class="w-8 h-8 z-20 animate-icon-pulse object-contain" />
             </div>
-            <p class="text-gray-400 font-mono text-sm tracking-widest uppercase animate-pulse">Syncing Live Database...</p>
+            <p class="font-mono text-sm tracking-widest uppercase animate-text-gradient-pulse">Syncing Live Database...</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="propertyGrid">
