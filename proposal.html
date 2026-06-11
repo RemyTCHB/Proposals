@@ -62,6 +62,46 @@
     .gate-unlocked #secureGate { display: none !important; }
     .hidden-module { display: none !important; }
 
+    /* NEW LOADER STYLES */
+    @keyframes pan-x {
+        0% { background-position: 100% center; }
+        100% { background-position: 0% center; }
+    }
+    .gradient-ring-border {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        padding: 3.5px;
+        background: linear-gradient(to right, #4f46e5, #10b981, #dc2626, #10b981, #4f46e5);
+        background-size: 300% 100%;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: pan-x 6s linear infinite, custom-spin 1.5s linear infinite;
+    }
+    .gradient-ring-glow {
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        background: linear-gradient(to right, #4f46e5, #10b981, #dc2626, #10b981, #4f46e5);
+        background-size: 300% 100%;
+        filter: blur(14px);
+        animation: pan-x 6s linear infinite, pulse-glow-strong 2s ease-in-out infinite alternate;
+    }
+    @keyframes custom-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    @keyframes pulse-glow-strong {
+        0% { opacity: 0.3; transform: scale(0.9); }
+        100% { opacity: 0.8; transform: scale(1.1); }
+    }
+    @keyframes icon-pulse {
+        0%, 100% { transform: scale(0.85); opacity: 0.6; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
+        50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 15px rgba(255,255,255,0.6)); }
+    }
+    .animate-icon-pulse { animation: icon-pulse 2s ease-in-out infinite; }
+
     @media print {
       @page { size: letter portrait; margin: 0.4in; }
       html, body { background-color: #0b0f19 !important; color: #f3f4f6 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -116,7 +156,11 @@
   <canvas id="gridCanvas" class="fixed inset-0 w-full h-full -z-10 no-print" style="pointer-events: none;"></canvas>
 
   <div id="fullPageLoader" class="fixed inset-0 z-[110] bg-[#0b0f19] flex flex-col items-center justify-center">
-      <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500 mb-4"></div>
+      <div class="relative w-24 h-24 mb-8 flex items-center justify-center">
+          <div class="gradient-ring-glow z-0"></div>
+          <div class="gradient-ring-border z-10"></div>
+          <img src="icon.svg" alt="Loading" class="w-10 h-10 z-20 animate-icon-pulse object-contain" />
+      </div>
       <p class="text-indigo-400 font-bold uppercase tracking-widest animate-pulse" id="loaderText">Constructing Proposal...</p>
   </div>
 
