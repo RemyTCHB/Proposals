@@ -228,17 +228,23 @@
       <!-- WHOLESALE / RENTAL KPIs -->
       <div class="mt-6 flex flex-col gap-6 hidden-module" id="wholesale-kpis">
          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div id="ws-kpi-1-wrapper" class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-center items-center text-center transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
-              <p id="ui-ws-kpi-1-label" class="text-xs uppercase font-semibold text-emerald-400 tracking-wider">...</p>
-              <h3 id="ui-ws-kpi-1-value" class="text-3xl lg:text-4xl font-extrabold text-white mt-2">...</h3>
+            <div id="ws-kpi-1-wrapper" class="relative gradient-border bg-gradient-to-br from-indigo-950/30 to-brand-crimson/10 border border-gray-800 p-6 rounded-xl flex flex-col justify-center items-center text-center transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
+              <div class="absolute top-4 right-4 w-10 h-10 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden">
+                 <img class="w-full h-full object-contain scale-110" src="icon.svg" onerror="this.style.display='none'">
+              </div>
+              <p id="ui-ws-kpi-1-label" class="text-xs uppercase font-semibold text-emerald-400 tracking-wider z-10">...</p>
+              <h3 id="ui-ws-kpi-1-value" class="text-3xl lg:text-4xl font-extrabold text-white group-hover:text-emerald-400 transition-colors mt-2 z-10">...</h3>
             </div>
-            <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-center items-center text-center transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
-              <p id="ui-ws-kpi-2-label" class="text-xs uppercase font-semibold text-emerald-400 tracking-wider">...</p>
-              <h3 id="ui-ws-kpi-2-value" class="text-3xl lg:text-4xl font-extrabold text-white mt-2">...</h3>
-              <p id="ui-ws-kpi-2-desc" class="text-xs text-gray-300 mt-4 leading-relaxed">...</p>
+            <div class="relative gradient-border bg-gradient-to-br from-indigo-950/30 to-brand-crimson/10 border border-gray-800 p-6 rounded-xl flex flex-col justify-center items-center text-center transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
+              <div class="absolute top-4 right-4 w-10 h-10 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden">
+                 <img class="w-full h-full object-contain scale-110" src="icon.svg" onerror="this.style.display='none'">
+              </div>
+              <p id="ui-ws-kpi-2-label" class="text-xs uppercase font-semibold text-emerald-400 tracking-wider z-10">...</p>
+              <h3 id="ui-ws-kpi-2-value" class="text-3xl lg:text-4xl font-extrabold text-white group-hover:text-emerald-400 transition-colors mt-2 z-10">...</h3>
+              <p id="ui-ws-kpi-2-desc" class="text-xs text-gray-300 mt-4 leading-relaxed z-10">...</p>
             </div>
          </div>
-         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 gradient-border bg-gray-900/50 p-6 rounded-xl transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group">
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 gradient-border bg-gradient-to-br from-indigo-950/30 to-brand-crimson/10 border border-gray-800 p-6 rounded-xl transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group">
             <div>
                <h4 class="text-base font-extrabold text-white mb-4">Property Specs</h4>
                <div id="ui-ws-kpi-3-specs" class="text-xs text-gray-300 leading-relaxed">...</div>
@@ -344,9 +350,9 @@
       </div>
     </div>
 
-    <!-- RENTAL WEALTH MILESTONES (DYNAMIC) -->
+        <!-- RENTAL WEALTH MILESTONES (DYNAMIC) -->
     <div id="rental-milestones" class="print-break-inside-avoid mb-12 hidden-module">
-      <div class="bg-gray-900/40 p-8 rounded-2xl border border-gray-800 text-center flex flex-col items-center">
+      <div class="bg-gradient-to-br from-indigo-950/30 to-brand-crimson/10 p-8 rounded-2xl border border-gray-800 text-center flex flex-col items-center">
         <div class="max-w-6xl mx-auto flex flex-col items-center">
           <div class="text-center mb-8">
             <span class="text-emerald-400 font-bold uppercase text-xs tracking-wider block text-center">Holding Horizon Projection</span>
@@ -503,11 +509,13 @@
     };
 
     function checkGate() {
-        const sessionKey = 'tchb_access_granted_' + urlPropId;
-        if (sessionStorage.getItem(sessionKey) === 'true') {
+        const currentAllowed = sessionStorage.getItem('tchb_active_property');
+        // Secure comparison enforces strictly locking out mismatched URL ?ids
+        if (currentAllowed === urlPropId) {
             unlockPage();
         } else {
             document.getElementById('fullPageLoader').classList.add('hidden');
+            document.getElementById('secureGate').classList.remove('hidden');
         }
     }
 
@@ -569,7 +577,7 @@
                 document.getElementById('gateStep2Container').classList.remove('hidden');
                 document.getElementById('gateErrorMessage').classList.add('hidden');
                 btn.innerText = "Verify & Unlock Proposal";
-                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                btn.className = "w-full bg-brand-emerald hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 mt-4 cursor-pointer";
                 btn.disabled = false;
                 document.getElementById('gateOtpInput').focus();
             }, 500);
@@ -583,7 +591,7 @@
                 return;
             }
 
-            sessionStorage.setItem('tchb_access_granted_' + urlPropId, 'true');
+            sessionStorage.setItem('tchb_active_property', urlPropId); // Update mapping security
             sessionStorage.setItem('tchb_email_' + urlPropId, emailInput);
             sessionStorage.setItem('tchb_sess_' + urlPropId, currentSessionId);
             
@@ -689,18 +697,13 @@
         document.getElementById('ui-box-1-title').innerText = data.box1Title; document.getElementById('ui-box-1-desc').innerText = data.box1Desc;
         document.getElementById('ui-box-2-title').innerText = data.box2Title; document.getElementById('ui-box-2-desc').innerText = data.box2Desc;
 
-        // Apply dynamic hue gradients to narrative boxes based on Deal Type
+        // Apply dynamic hue gradients universally to narrative boxes
         const b1 = document.getElementById('box-1-wrapper');
         const b2 = document.getElementById('box-2-wrapper');
         b1.className = b1.className.replace(/bg-gray-900\/20/g, '');
         b2.className = b2.className.replace(/bg-gray-900\/20/g, '');
-        if (data.dealType === 'creative') {
-            b1.classList.add('bg-gradient-to-br', 'from-indigo-950/30', 'to-brand-crimson/10');
-            b2.classList.add('bg-gradient-to-br', 'from-indigo-950/30', 'to-brand-crimson/10');
-        } else {
-            b1.classList.add('bg-gradient-to-br', 'from-emerald-950/30', 'to-brand-emerald/10');
-            b2.classList.add('bg-gradient-to-br', 'from-emerald-950/30', 'to-brand-emerald/10');
-        }
+        b1.classList.add('bg-gradient-to-br', 'from-indigo-950/30', 'to-brand-crimson/10');
+        b2.classList.add('bg-gradient-to-br', 'from-indigo-950/30', 'to-brand-crimson/10');
 
         document.querySelectorAll('.hidden-module').forEach(el => el.classList.add('hidden-module'));
         if(currentDBRow.Status && currentDBRow.Status.toUpperCase() === 'SOLD') document.getElementById('soldOverlayBanner').classList.remove('hidden-module');
@@ -799,12 +802,6 @@
         const cashFlow = marketPITI - sub2PITI;
 
         document.getElementById('ui-creative-tbody').innerHTML = `
-            <tr>
-              <td class="px-6 py-4 font-semibold text-gray-200 text-center">Type of Loan</td>
-              <td class="px-6 py-4 font-medium text-white bg-purple-950/10 text-center">${data.crSub2LoanType || 'N/A'}</td>
-              <td class="px-6 py-4 text-center">${data.crMarketLoanType || 'N/A'}</td>
-              <td class="px-6 py-4 text-center text-gray-400">—</td>
-            </tr>
             <tr>
               <td class="px-6 py-4 font-semibold text-gray-200 text-center">Loan Amount (Principal)</td>
               <td class="px-6 py-4 bg-purple-950/10 text-white font-medium text-center">${data.crSub2Principal || '$0'}</td>
