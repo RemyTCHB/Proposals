@@ -6,11 +6,6 @@
   <title>TCHB - Proposal</title>
   
   <link rel="icon" type="image/svg+xml" href="icon.svg">
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -23,11 +18,13 @@
         extend: {
           fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
           colors: {
-            brand: { purple: '#4f46e5', crimson: '#dc2626', emerald: '#10b981', gold: '#f59e0b', bgDark: '#0b0f19', cardBg: '#111827' }
+            brand: { purple: '#4f46e5', crimson: '#dc2626', emerald: '#10b981', gold: '#f59e0b', cyan: '#06b6d4', bgDark: '#0b0f19', cardBg: '#111827' }
           }
         }
       }
     }
+    // Global chart setting for pure white text labels
+    Chart.defaults.color = '#ffffff';
   </script>
   
   <style>
@@ -85,109 +82,46 @@
     .gate-unlocked #secureGate { display: none !important; }
     .hidden-module { display: none !important; }
 
-    /* NEW LOADER STYLES */
     @keyframes pan-x {
         0% { background-position: 100% center; }
         100% { background-position: 0% center; }
     }
     .gradient-ring-border {
-        position: absolute;
-        inset: 0;
-        border-radius: 50%;
-        padding: 3.5px;
+        position: absolute; inset: 0; border-radius: 50%; padding: 3.5px;
         background: linear-gradient(to right, #4f46e5, #10b981, #dc2626, #10b981, #4f46e5);
         background-size: 300% 100%;
-        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
         animation: pan-x 6s linear infinite, custom-spin 1.5s linear infinite;
     }
     .gradient-ring-glow {
-        position: absolute;
-        inset: -4px;
-        border-radius: 50%;
+        position: absolute; inset: -4px; border-radius: 50%;
         background: linear-gradient(to right, #4f46e5, #10b981, #dc2626, #10b981, #4f46e5);
-        background-size: 300% 100%;
-        filter: blur(14px);
+        background-size: 300% 100%; filter: blur(14px);
         animation: pan-x 6s linear infinite, pulse-glow-strong 2s ease-in-out infinite alternate;
     }
-    @keyframes custom-spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    @keyframes pulse-glow-strong {
-        0% { opacity: 0.3; transform: scale(0.9); }
-        100% { opacity: 0.8; transform: scale(1.1); }
-    }
-    @keyframes icon-pulse {
-        0%, 100% { transform: scale(0.85); opacity: 0.6; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
-        50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 15px rgba(255,255,255,0.6)); }
-    }
+    @keyframes custom-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes pulse-glow-strong { 0% { opacity: 0.3; transform: scale(0.9); } 100% { opacity: 0.8; transform: scale(1.1); } }
+    @keyframes icon-pulse { 0%, 100% { transform: scale(0.85); opacity: 0.6; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); } 50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 15px rgba(255,255,255,0.6)); } }
     .animate-icon-pulse { animation: icon-pulse 2s ease-in-out infinite; }
 
     .animate-text-gradient-pulse {
         background: linear-gradient(to right, #4f46e5, #10b981, #dc2626, #10b981, #4f46e5);
-        background-size: 300% 100%;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        color: transparent;
+        background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent;
         animation: pan-x 6s linear infinite, text-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
-    @keyframes text-pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.4; }
-    }
+    @keyframes text-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-    /* NEW LOADER STYLES */
-    @keyframes pan-x {
-        0% { background-position: 100% center; }
-        100% { background-position: 0% center; }
-    }
-    .gradient-ring-border {
-        position: absolute;
-        inset: 0;
-        border-radius: 50%;
-        padding: 3.5px;
-        background: linear-gradient(to right, #4f46e5, #10b981, #dc2626, #10b981, #4f46e5);
-        background-size: 300% 100%;
-        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        animation: pan-x 6s linear infinite, custom-spin 1.5s linear infinite;
-    }
-    .gradient-ring-glow {
-        position: absolute;
-        inset: -4px;
-        border-radius: 50%;
-        background: linear-gradient(to right, #4f46e5, #10b981, #dc2626, #10b981, #4f46e5);
-        background-size: 300% 100%;
-        filter: blur(14px);
-        animation: pan-x 6s linear infinite, pulse-glow-strong 2s ease-in-out infinite alternate;
-    }
-    @keyframes custom-spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    @keyframes pulse-glow-strong {
-        0% { opacity: 0.3; transform: scale(0.9); }
-        100% { opacity: 0.8; transform: scale(1.1); }
-    }
-    @keyframes icon-pulse {
-        0%, 100% { transform: scale(0.85); opacity: 0.6; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
-        50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 15px rgba(255,255,255,0.6)); }
-    }
-    .animate-icon-pulse { animation: icon-pulse 2s ease-in-out infinite; }
-
+    /* Print Break Logic */
     @media print {
       @page { size: letter portrait; margin: 0.4in; }
       html, body { background-color: #0b0f19 !important; color: #f3f4f6 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       .no-print { display: none !important; }
       .gradient-border::before { display: none !important; content: none !important; }
       .gradient-border { border: 1px solid #1e293b !important; border-radius: 0.75rem !important; background-color: #111827 !important; }
-      .print-page-1 { page-break-after: always !important; }
-      table { font-size: 11px !important; }
-      .chart-container-print { height: 260px !important; }
+      
+      .print-break-inside-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
+      table, tr, td, th { page-break-inside: avoid !important; }
+      .chart-container-print { height: 260px !important; page-break-inside: avoid !important; }
       #mouseGlow, #cursor-dot, #cursor-ring { display: none !important; }
     }
   </style>
@@ -213,7 +147,7 @@
         
         <div id="gateStep1Container" class="space-y-4">
             <input type="email" id="gateEmailInput" placeholder="Email Address" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-text">
-            <input type="password" id="gateAccessKeyInput" placeholder="Access Key" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-text">
+            <input type="password" id="gateAccessKeyInput" placeholder="Access Key / Admin Pass" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-text">
         </div>
 
         <div id="gateStep2Container" class="space-y-4 hidden mt-2">
@@ -236,7 +170,7 @@
       <div class="relative w-24 h-24 mb-8 flex items-center justify-center">
           <div class="gradient-ring-glow z-0"></div>
           <div class="gradient-ring-border z-10"></div>
-          <img src="icon.svg" alt="Loading" class="w-10 h-10 z-20 animate-icon-pulse object-contain" />
+          <img src="icon.svg" alt="Loading" class="w-10 h-10 z-20 animate-icon-pulse object-contain" onerror="this.style.display='none'" />
       </div>
       <p class="font-bold uppercase tracking-widest animate-text-gradient-pulse" id="loaderText">Constructing Proposal...</p>
   </div>
@@ -247,11 +181,11 @@
         Alert: This Property Has Been Sold Or Closed. Data Is Preserved For Archival Purposes Only.
     </div>
 
-    <div class="print-page-1">
+    <div class="print-break-inside-avoid mb-8">
       <header class="flex flex-col md:flex-row justify-between items-center pb-8 border-b border-gray-800 gap-6">
         <div class="flex items-center gap-4">
           <a href="../" class="flex items-center hover:opacity-90 active:scale-95 duration-150 transition-all cursor-pointer">
-            <img src="logo.svg" alt="Total Cash Home Buyers Logo" class="h-16 md:h-20 w-auto object-contain" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
+            <img src="logo.svg" alt="Total Cash Home Buyers Logo" class="h-16 md:h-20 w-auto object-contain" onerror="this.src='https://via.placeholder.com/200x80?text=TCHB+Logo'">
           </a>
         </div>
         <div class="text-right flex flex-col items-center md:items-end">
@@ -270,130 +204,157 @@
         </div>
       </div>
 
-      <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-300 group cursor-pointer">
+      <!-- CREATIVE KPIs -->
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 hidden-module" id="creative-kpis">
+        <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
           <div class="flex justify-between items-start">
             <div>
-              <p id="ui-kpi-1-label" class="text-xs uppercase font-semibold text-indigo-400 tracking-wider">...</p>
-              <h3 id="ui-kpi-1-value" class="text-4xl font-extrabold text-indigo-500 mt-1">...</h3>
+              <p id="ui-kpi-1-label" class="text-xs uppercase font-semibold text-purple-400 tracking-wider">...</p>
+              <h3 id="ui-kpi-1-value" class="text-3xl lg:text-4xl font-extrabold text-white mt-1">...</h3>
             </div>
-            <div class="w-12 h-12 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden"><img class="w-full h-full object-contain scale-110" src="icon.svg"></div>
           </div>
           <p id="ui-kpi-1-desc" class="text-xs text-gray-300 mt-4 leading-relaxed">...</p>
         </div>
-        <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-300 group cursor-pointer">
+        <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
           <div class="flex justify-between items-start">
             <div>
-              <p id="ui-kpi-2-label" class="text-xs uppercase font-semibold text-brand-emerald tracking-wider">...</p>
-              <h3 id="ui-kpi-2-value" class="text-4xl font-extrabold text-emerald-400 mt-1">...</h3>
+              <p id="ui-kpi-2-label" class="text-xs uppercase font-semibold text-cyan-400 tracking-wider">...</p>
+              <h3 id="ui-kpi-2-value" class="text-3xl lg:text-4xl font-extrabold text-white mt-1">...</h3>
             </div>
-            <div class="w-12 h-12 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden"><img class="w-full h-full object-contain scale-110" src="icon.svg"></div>
           </div>
           <p id="ui-kpi-2-desc" class="text-xs text-gray-300 mt-4 leading-relaxed">...</p>
         </div>
-        <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-300 group cursor-pointer">
+        <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
           <div class="flex justify-between items-start">
             <div>
               <p id="ui-kpi-3-label" class="text-xs uppercase font-semibold text-brand-gold tracking-wider">...</p>
-              <h3 id="ui-kpi-3-value" class="text-4xl font-extrabold text-amber-400 mt-1">...</h3>
+              <h3 id="ui-kpi-3-value" class="text-3xl lg:text-4xl font-extrabold text-white mt-1">...</h3>
             </div>
-            <div class="w-12 h-12 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden"><img class="w-full h-full object-contain scale-110" src="icon.svg"></div>
           </div>
           <p id="ui-kpi-3-desc" class="text-xs text-gray-300 mt-4 leading-relaxed">...</p>
         </div>
       </div>
 
-      <div id="module-creative-table" class="hidden-module mt-8 bg-gray-900/40 rounded-2xl border border-gray-800 overflow-hidden">
-        <div class="p-6 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 flex justify-between items-center">
-          <div><h3 class="text-lg font-bold text-white">Subject-To Deal Architecture</h3><p class="text-xs text-gray-400">Comparing Sub2 against standard market debt.</p></div>
-          <button onclick="window.print()" class="no-print bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all cursor-pointer">Export PDF</button>
-        </div>
-        <div class="overflow-x-auto"><table class="w-full text-center text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase"><tr><th class="px-6 py-4">Metric</th><th class="px-6 py-4 text-indigo-400 bg-indigo-950/20 font-bold">🔥 Proposed Deal</th><th class="px-6 py-4">Standard Market</th><th class="px-6 py-4 text-brand-emerald">Net Advantage</th></tr></thead><tbody id="ui-creative-tbody" class="divide-y divide-gray-800"></tbody></table></div>
+      <!-- WHOLESALE / RENTAL KPIs -->
+      <div class="mt-6 flex flex-col gap-6 hidden-module" id="wholesale-kpis">
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="ws-kpi-1-wrapper" class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p id="ui-ws-kpi-1-label" class="text-xs uppercase font-semibold text-cyan-400 tracking-wider">...</p>
+                  <h3 id="ui-ws-kpi-1-value" class="text-3xl lg:text-4xl font-extrabold text-white mt-1">...</h3>
+                </div>
+                <svg class="w-5 h-5 text-cyan-400 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+              </div>
+            </div>
+            <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p id="ui-ws-kpi-2-label" class="text-xs uppercase font-semibold text-cyan-400 tracking-wider">...</p>
+                  <h3 id="ui-ws-kpi-2-value" class="text-3xl lg:text-4xl font-extrabold text-white mt-1">...</h3>
+                </div>
+              </div>
+              <p id="ui-ws-kpi-2-desc" class="text-xs text-gray-300 mt-4 leading-relaxed">...</p>
+            </div>
+         </div>
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 gradient-border bg-gray-900/50 p-6 rounded-xl">
+            <div>
+               <h4 class="text-base font-extrabold text-white mb-2 flex items-center gap-2"><span class="text-cyan-400 font-bold text-sm">●</span> Property Specs</h4>
+               <p id="ui-ws-kpi-3-specs" class="text-xs text-gray-300 leading-relaxed whitespace-pre-wrap">...</p>
+            </div>
+            <div>
+               <h4 class="text-base font-extrabold text-white mb-2 flex items-center gap-2"><span class="text-purple-400 font-bold text-sm">●</span> Important Notes</h4>
+               <p id="ui-ws-kpi-3-notes" class="text-xs text-gray-300 leading-relaxed whitespace-pre-wrap">...</p>
+            </div>
+         </div>
       </div>
-
-      <div id="module-wholesale-table" class="hidden-module mt-8 bg-gray-900/40 rounded-2xl border border-gray-800 overflow-hidden">
-        <div class="p-6 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 flex justify-between items-center">
-          <div><h3 class="text-lg font-bold text-white" id="ws-table-title">Acquisition & Profitability</h3><p class="text-xs text-gray-400">Direct spread analysis and expected ROI metrics.</p></div>
-          <button onclick="window.print()" class="no-print bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all cursor-pointer">Export PDF</button>
-        </div>
-        <div class="overflow-x-auto"><table class="w-full text-center text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase"><tr><th class="px-6 py-4 text-left pl-6">Acquisition & Costs</th><th class="px-6 py-4 text-right">Amount</th><th class="px-6 py-4 text-left border-l border-gray-800 pl-6">Exit Strategy & Returns</th><th class="px-6 py-4 text-right pr-6">Amount</th></tr></thead><tbody id="ui-wholesale-tbody" class="divide-y divide-gray-800"></tbody></table></div>
-      </div>
-
-      <div id="module-novation-table" class="hidden-module mt-8 bg-gray-900/40 rounded-2xl border border-gray-800 overflow-hidden">
-        <div class="p-6 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 flex justify-between items-center">
-          <div><h3 class="text-lg font-bold text-white">Novation Joint Venture Structure</h3><p class="text-xs text-gray-400">Partnership breakdown, capital requirements, and margins.</p></div>
-          <button onclick="window.print()" class="no-print bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all cursor-pointer">Export PDF</button>
-        </div>
-        <div class="overflow-x-auto"><table class="w-full text-center text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase"><tr><th class="px-6 py-4 text-left pl-6">Capital & Obligations</th><th class="px-6 py-4 text-right">Amount</th><th class="px-6 py-4 text-left border-l border-gray-800 pl-6">Retail Exit & Distributions</th><th class="px-6 py-4 text-right pr-6">Amount</th></tr></thead><tbody id="ui-novation-tbody" class="divide-y divide-gray-800"></tbody></table></div>
-      </div>
-
-      <div id="module-seller-finance-table" class="hidden-module mt-8 bg-gray-900/40 rounded-2xl border border-gray-800 overflow-hidden">
-        <div class="p-6 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 flex justify-between items-center">
-          <div><h3 class="text-lg font-bold text-white">Seller Finance / Wrap Amortization</h3><p class="text-xs text-gray-400">Direct comparison of owner financing vs market lending.</p></div>
-          <button onclick="window.print()" class="no-print bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all cursor-pointer">Export PDF</button>
-        </div>
-        <div class="overflow-x-auto"><table class="w-full text-center text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase"><tr><th class="px-6 py-4 text-left pl-6">Deal Metrics</th><th class="px-6 py-4 text-indigo-400 bg-indigo-950/20 font-bold">Owner Financed</th><th class="px-6 py-4 border-l border-gray-800">Standard Loan</th><th class="px-6 py-4 text-brand-emerald">Advantage</th></tr></thead><tbody id="ui-seller-finance-tbody" class="divide-y divide-gray-800"></tbody></table></div>
-      </div>
-
-      <div id="module-rental-table" class="hidden-module mt-8 bg-gray-900/40 rounded-2xl border border-gray-800 overflow-hidden">
-        <div class="p-6 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 flex justify-between items-center">
-          <div><h3 class="text-lg font-bold text-white">Rental Portfolio Operations</h3><p class="text-xs text-gray-400">Cash-on-cash and Cap Rate operational analysis.</p></div>
-          <button onclick="window.print()" class="no-print bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all cursor-pointer">Export PDF</button>
-        </div>
-        <div class="overflow-x-auto"><table class="w-full text-center text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase"><tr><th class="px-6 py-4 text-left pl-6">Operational Income & Expense</th><th class="px-6 py-4 text-right">Amount</th><th class="px-6 py-4 text-left border-l border-gray-800 pl-6">Yield & Performance</th><th class="px-6 py-4 text-right pr-6">Metric</th></tr></thead><tbody id="ui-rental-tbody" class="divide-y divide-gray-800"></tbody></table></div>
-      </div>
-
     </div>
 
-    <div class="print-page-2 mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 cursor-pointer">
+    <div class="print-break-inside-avoid">
+        <!-- CREATIVE/SUBJECT TO TABLE -->
+        <div id="module-creative-table" class="hidden-module bg-gray-900/40 rounded-2xl border border-gray-800 overflow-hidden mb-8">
+            <div class="p-6 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 flex justify-between items-center">
+            <div><h3 class="text-lg font-bold text-white">Subject-To / Creative Deal Architecture</h3><p class="text-xs text-gray-400">Comparing Sub2/Creative against standard market debt.</p></div>
+            <button onclick="window.print()" class="no-print bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all cursor-pointer">Export PDF</button>
+            </div>
+            <div class="overflow-x-auto"><table class="w-full text-center text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase"><tr><th class="px-6 py-4 text-left">Metric</th><th class="px-6 py-4 text-purple-400 bg-purple-950/20 font-bold">🔥 Proposed Deal</th><th class="px-6 py-4">Standard Market</th><th class="px-6 py-4 text-cyan-400 text-right">Net Advantage</th></tr></thead><tbody id="ui-creative-tbody" class="divide-y divide-gray-800"></tbody></table></div>
+        </div>
+
+        <!-- WHOLESALE TABLE -->
+        <div id="module-wholesale-table" class="hidden-module bg-gray-900/40 rounded-2xl border border-gray-800 overflow-hidden mb-8">
+            <div class="p-6 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 flex justify-between items-center">
+            <div><h3 class="text-lg font-bold text-white" id="ws-table-title">Wholesale / Off-Market Breakdown</h3><p class="text-xs text-gray-400">Direct spread analysis and expected ROI metrics.</p></div>
+            <button onclick="window.print()" class="no-print bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all cursor-pointer">Export PDF</button>
+            </div>
+            <div class="overflow-x-auto"><table class="w-full text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase text-center"><tr><th class="px-6 py-4 text-left pl-6">Acquisition Info & Costs</th><th class="px-6 py-4 text-right">Amount</th><th class="px-6 py-4 text-left border-l border-gray-800 pl-6">Exit Strategy & Returns</th><th class="px-6 py-4 text-right pr-6">Amount</th></tr></thead><tbody id="ui-wholesale-tbody" class="divide-y divide-gray-800 text-center"></tbody></table></div>
+        </div>
+
+        <!-- RENTAL TABLE -->
+        <div id="module-rental-table" class="hidden-module bg-gray-900/40 rounded-2xl border border-gray-800 overflow-hidden mb-8">
+            <div class="p-6 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 flex justify-between items-center">
+            <div><h3 class="text-lg font-bold text-white">Turnkey / Rental Portfolio Operations</h3><p class="text-xs text-gray-400">Operational analysis of total expected rent and yields.</p></div>
+            <button onclick="window.print()" class="no-print bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all cursor-pointer">Export PDF</button>
+            </div>
+            <div class="overflow-x-auto"><table class="w-full text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase text-center"><tr><th class="px-6 py-4 text-left pl-6">Acquisition Info & Costs</th><th class="px-6 py-4 text-right">Amount</th><th class="px-6 py-4 text-left border-l border-gray-800 pl-6">Exit Strategy & Returns</th><th class="px-6 py-4 text-right pr-6">Amount</th></tr></thead><tbody id="ui-rental-tbody" class="divide-y divide-gray-800 text-center"></tbody></table></div>
+        </div>
+    </div>
+
+    <!-- NARRATIVE BOXES -->
+    <div id="narrative-container" class="print-break-inside-avoid flex flex-col gap-6 cursor-pointer mb-12">
+        <!-- Box 1 -->
         <div class="bg-gray-900/20 p-6 rounded-xl border border-gray-800 flex gap-4 text-left hover:bg-gray-900/40 transition-all">
-          <div class="w-10 h-10 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden"><img class="w-full h-full object-contain scale-110" src="icon.svg"></div>
+          <div class="w-10 h-10 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden"><img class="w-full h-full object-contain scale-110" src="icon.svg" onerror="this.style.display='none'"></div>
           <div>
-            <h4 id="ui-narrative-1-title" class="text-base font-extrabold text-white">...</h4>
-            <p id="ui-narrative-1-desc" class="text-xs text-gray-400 mt-2 leading-relaxed">...</p>
+            <h4 id="ui-box-1-title" class="text-base font-extrabold text-white">...</h4>
+            <p id="ui-box-1-desc" class="text-xs text-gray-400 mt-2 leading-relaxed">...</p>
           </div>
         </div>
+
+        <!-- Box 2 -->
         <div class="bg-gray-900/20 p-6 rounded-xl border border-gray-800 flex gap-4 text-left hover:bg-gray-900/40 transition-all">
-          <div class="w-10 h-10 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden"><img class="w-full h-full object-contain scale-110" src="icon.svg"></div>
+          <div class="w-10 h-10 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden"><img class="w-full h-full object-contain scale-110" src="icon.svg" onerror="this.style.display='none'"></div>
           <div>
-            <h4 id="ui-narrative-2-title" class="text-base font-extrabold text-white">...</h4>
-            <p id="ui-narrative-2-desc" class="text-xs text-gray-400 mt-2 leading-relaxed">...</p>
+            <h4 id="ui-box-2-title" class="text-base font-extrabold text-white">...</h4>
+            <p id="ui-box-2-desc" class="text-xs text-gray-400 mt-2 leading-relaxed">...</p>
           </div>
         </div>
     </div>
 
-    <div id="module-charts" class="hidden-module print-page-3 mt-12 cursor-pointer">
-      <div class="text-center mb-6 no-print md:block">
-        <span class="text-indigo-400 font-bold uppercase text-xs tracking-wider">Visual Performance Analytics</span>
-        <h3 class="text-2xl font-black text-white mt-1">Direct Comparative Visualizations</h3>
-      </div>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 hover:border-indigo-500/30 transition-all">
-          <h3 class="text-base font-bold text-white mb-1">Monthly Payment Structuring</h3>
-          <div class="relative h-64 w-full chart-container-print"><canvas id="paymentChart"></canvas></div>
+    <!-- CHARTS -->
+    <div class="print-break-inside-avoid">
+        <div id="module-charts" class="hidden-module mb-12 cursor-pointer">
+        <div class="text-center mb-6 no-print md:block">
+            <span class="text-purple-400 font-bold uppercase text-xs tracking-wider">Visual Performance Analytics</span>
+            <h3 class="text-2xl font-black text-white mt-1">Direct Comparative Visualizations</h3>
         </div>
-        <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 hover:border-indigo-500/30 transition-all">
-          <h3 class="text-base font-bold text-white mb-1">Interest Accumulation Contrast</h3>
-          <div class="relative h-64 w-full chart-container-print"><canvas id="interestChart"></canvas></div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 hover:border-purple-500/30 transition-all">
+            <h3 class="text-base font-bold text-white mb-1">Monthly Payment Structuring</h3>
+            <div class="relative h-64 w-full chart-container-print"><canvas id="paymentChart"></canvas></div>
+            </div>
+            <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 hover:border-purple-500/30 transition-all">
+            <h3 class="text-base font-bold text-white mb-1">Interest Accumulation Contrast</h3>
+            <div class="relative h-64 w-full chart-container-print"><canvas id="interestChart"></canvas></div>
+            </div>
         </div>
-      </div>
-    </div>
+        </div>
 
-    <div id="module-doughnut-chart" class="hidden-module print-page-3 mt-12 cursor-pointer">
-      <div class="text-center mb-6 no-print md:block">
-        <span class="text-brand-emerald font-bold uppercase text-xs tracking-wider">Capital Architecture</span>
-        <h3 class="text-2xl font-black text-white mt-1">Capital Slice Breakdown</h3>
-      </div>
-      <div class="flex justify-center">
-        <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 w-full max-w-2xl hover:border-emerald-500/30 transition-all">
-          <div class="relative h-80 w-full chart-container-print flex justify-center"><canvas id="doughnutChart"></canvas></div>
+        <div id="module-doughnut-chart" class="hidden-module mb-12 cursor-pointer">
+        <div class="text-center mb-6 no-print md:block">
+            <span class="text-cyan-400 font-bold uppercase text-xs tracking-wider">Capital Architecture</span>
+            <h3 class="text-2xl font-black text-white mt-1">Capital Slice Breakdown</h3>
         </div>
-      </div>
+        <div class="flex justify-center">
+            <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 w-full max-w-2xl hover:border-cyan-500/30 transition-all">
+            <div class="relative h-80 w-full chart-container-print flex justify-center"><canvas id="doughnutChart"></canvas></div>
+            </div>
+        </div>
+        </div>
     </div>
 
     <footer class="mt-12 pt-6 border-t border-gray-800 text-center text-xs text-gray-500 flex flex-col items-center gap-2">
       <div class="flex items-center gap-2 justify-center">
-        <img class="w-5 h-5 opacity-80" src="icon.svg" alt="TCHB Icon">
+        <img class="w-5 h-5 opacity-80" src="icon.svg" alt="TCHB Icon" onerror="this.style.display='none'">
         <span class="font-bold text-gray-400">TOTAL CASH HOME BUYERS</span> • <span>Underwriting Division</span>
       </div>
       <div class="flex gap-4 text-xs mt-1 mb-1">
@@ -407,7 +368,7 @@
             +1 (703) 585-4331
         </a>
       </div>
-      <p class="max-w-md text-[10px] mx-auto">Analysis Constructed For Informational Real Estate Portfolio Modeling Purposes Based On Verified Underwriting Metrics.</p>
+      <p class="max-w-md text-[10px] mx-auto text-gray-600">Analysis Constructed For Informational Real Estate Portfolio Modeling Purposes Based On Verified Underwriting Metrics.</p>
     </footer>
 
   </div>
@@ -420,6 +381,7 @@
     let urlPropId = null;
     let gateAuthStep = 1;
     let gateExpectedOTP = null;
+    let currentSessionId = null;
 
     Chart.register(ChartDataLabels);
 
@@ -432,6 +394,20 @@
             body: JSON.stringify(payload)
         }).catch(err => console.log("Webhook Sync Error"));
     }
+
+    // Set up Session End Beacon when user closes the window or navigates away
+    window.addEventListener('pagehide', () => {
+        if (LOGGING_WEBHOOK_URL && currentSessionId) {
+            const emailStored = sessionStorage.getItem('tchb_email_' + urlPropId) || "Unknown";
+            navigator.sendBeacon(LOGGING_WEBHOOK_URL, JSON.stringify({
+                action: 'session_end', 
+                sessionId: currentSessionId, 
+                timestamp: Date.now(),
+                email: emailStored,
+                propertyId: urlPropId
+            }));
+        }
+    });
 
     window.onload = async function() {
         resizeCanvas();
@@ -497,6 +473,16 @@
                 sendWebhookEvent({ action: 'failed_otp_request', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, accessKeyUsed: keyInput, status: "ERROR", reason: "Invalid Email Address Format" });
                 return;
             }
+            
+            // ADMIN OVERRIDE
+            if (emailInput.toLowerCase().endsWith('@totalchb.com') && keyInput === 'Portal@2026') {
+                sessionStorage.setItem('tchb_access_granted_' + urlPropId, 'true');
+                sessionStorage.setItem('tchb_email_' + urlPropId, emailInput);
+                sendWebhookEvent({ action: 'log_access', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, otpUsed: 'Admin Password Bypass', status: "SUCCESS", reason: "ADMIN ACCESS" });
+                unlockPage();
+                return;
+            }
+
             if (keyInput !== currentDBRow.Access_Password) {
                 showGateError("Incorrect Security Authorization Code. Please Try Again.");
                 sendWebhookEvent({ action: 'failed_otp_request', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, accessKeyUsed: keyInput, status: "ERROR", reason: "Invalid Access Key" });
@@ -541,6 +527,7 @@
             }
 
             sessionStorage.setItem('tchb_access_granted_' + urlPropId, 'true');
+            sessionStorage.setItem('tchb_email_' + urlPropId, emailInput);
             
             sendWebhookEvent({ 
                 action: 'log_access', 
@@ -561,45 +548,61 @@
         document.getElementById('fullPageLoader').classList.add('hidden');
         document.getElementById('mainContent').classList.remove('hidden');
 
-        const dealTypeRaw = (currentDBRow.Deal_Type || '').toLowerCase().replace(/ /g, '_');
-        const badgeStyle = getDealThemeClass(dealTypeRaw);
+        // Fire Session Start Analytics
+        currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2,9);
+        sendWebhookEvent({
+            action: 'session_start',
+            timestamp: Date.now(),
+            email: sessionStorage.getItem('tchb_email_' + urlPropId) || "Unknown",
+            propertyId: urlPropId,
+            sessionId: currentSessionId
+        });
+
+        // Determine raw deal type mapped to the 3 structures
+        const rawType = (currentDBRow.Deal_Type || '').toUpperCase();
+        let dealTypeMap = 'wholesale'; // default
+        if(rawType.includes('SUBJECT-TO') || rawType.includes('CREATIVE')) dealTypeMap = 'creative';
+        else if(rawType.includes('RENTAL') || rawType.includes('TURN KEY') || rawType.includes('TURNKEY')) dealTypeMap = 'rental';
+
+        const badgeStyle = getDealThemeClass(dealTypeMap);
 
         const mappedData = {
-            dealType: dealTypeRaw,
-            badgeText: currentDBRow.Badge_Text || 'Deal Proposal',
+            dealType: dealTypeMap,
+            badgeText: currentDBRow.Teaser_Heading || 'Deal Proposal',
             badgeColor: badgeStyle,
             address: currentDBRow.Address,
             cityState: currentDBRow.City_State,
-            pillPrice: currentDBRow.Pill_Price,
-            pillDetail1: currentDBRow.Pill_Detail_1,
-            pillDetail2: currentDBRow.Pill_Detail_2,
+            pill1: currentDBRow.Pill_1,
+            pill2: currentDBRow.Pill_2,
+            pill3: currentDBRow.Pill_3,
             
-            kpi1Label: currentDBRow.KPI_1_Label, kpi1Value: currentDBRow.KPI_1_Value, kpi1Desc: currentDBRow.KPI_1_Desc,
-            kpi2Label: currentDBRow.KPI_2_Label, kpi2Value: currentDBRow.KPI_2_Value, kpi2Desc: currentDBRow.KPI_2_Desc,
-            kpi3Label: currentDBRow.KPI_3_Label, kpi3Value: currentDBRow.KPI_3_Value, kpi3Desc: currentDBRow.KPI_3_Desc,
-            nav1Title: currentDBRow.Nav_1_Title, nav1Desc: currentDBRow.Nav_1_Desc,
-            nav2Title: currentDBRow.Nav_2_Title, nav2Desc: currentDBRow.Nav_2_Desc,
+            info1Label: currentDBRow.Info_1_Label, info1Value: currentDBRow.Info_1_Value, info1Desc: currentDBRow.Info_1_Desc,
+            info2Label: currentDBRow.Info_2_Label, info2Value: currentDBRow.Info_2_Value, info2Desc: currentDBRow.Info_2_Desc,
+            info3Label: currentDBRow.Info_3_Label, info3Value: currentDBRow.Info_3_Value, info3Desc: currentDBRow.Info_3_Desc,
+            
+            wsInfo1Label: currentDBRow.WS_Info_1_Label, wsInfo1Value: currentDBRow.WS_Info_1_Value, wsInfo1Link: currentDBRow.WS_Info_1_Link,
+            wsInfo2Label: currentDBRow.WS_Info_2_Label, wsInfo2Value: currentDBRow.WS_Info_2_Value, wsInfo2Desc: currentDBRow.WS_Info_2_Desc,
+            wsInfo3Specs: currentDBRow.WS_Info_3_Specs, wsInfo3Notes: currentDBRow.WS_Info_3_Notes,
 
+            box1Title: currentDBRow.Box_1_Title, box1Desc: currentDBRow.Box_1_Desc,
+            box2Title: currentDBRow.Box_2_Title, box2Desc: currentDBRow.Box_2_Desc,
+
+            // Creative mapped vars
             sub2Rate: currentDBRow.CR_Sub2_Rate, marketRate: currentDBRow.CR_Market_Rate,
             sub2PI: parseFloat(currentDBRow.CR_Sub2_PI) || 0, marketPI: parseFloat(currentDBRow.CR_Market_PI) || 0,
             escrow: parseFloat(currentDBRow.CR_Escrow) || 0, totalInterestSaved: currentDBRow.CR_Total_Interest_Saved,
             
-            purchasePrice: currentDBRow.WS_Purchase_Price, closingCosts: currentDBRow.WS_Closing_Costs,
-            repairBudget: currentDBRow.WS_Repair_Budget, holdingCosts: currentDBRow.WS_Holding_Costs,
-            totalBasis: currentDBRow.WS_Total_Basis, arv: currentDBRow.WS_ARV,
-            realtorFees: currentDBRow.WS_Realtor_Fees, netReturn: currentDBRow.WS_Net_Return,
+            // Wholesale mapped vars
+            wsPurchasePrice: currentDBRow.WS_Purchase_Price, wsClosing: currentDBRow.WS_Est_Closing_Costs,
+            wsRepair: currentDBRow.WS_Est_Repair_Budget, wsBasis: currentDBRow.WS_Total_Basis, 
+            wsArv: currentDBRow.WS_Est_ARV, wsRealtor: currentDBRow.WS_Est_Realtor_Fees, 
+            wsReturn: currentDBRow.WS_Est_Net_Return,
             
-            nvSellerBase: currentDBRow.NV_Seller_Guarantee, nvRehab: currentDBRow.NV_Rehab_Capital,
-            nvLegal: currentDBRow.NV_Legal_Holding, nvTotalRisk: currentDBRow.NV_Total_Capital_Risk,
-            nvARV: currentDBRow.NV_Retail_ARV, nvDispCosts: currentDBRow.NV_Disposition_Costs,
-            nvGrossProfit: currentDBRow.NV_Total_Gross_Profit, nvNetROI: currentDBRow.NV_Investor_Net,
-            
-            sfDownPayment: currentDBRow.SF_Down_Payment, sfAmort: currentDBRow.SF_Amort_Term,
-            sfBalloon: currentDBRow.SF_Balloon_Term, sfPayment: currentDBRow.SF_Monthly_Payment,
-            
-            rnPrice: currentDBRow.RN_Purchase_Price, rnNOI: currentDBRow.RN_NOI,
-            rnRent: currentDBRow.RN_Gross_Rent, rnCapRate: currentDBRow.RN_Cap_Rate,
-            rnOpEx: currentDBRow.RN_OpEx, rnCoC: currentDBRow.RN_Cash_on_Cash
+            // Rental mapped vars
+            rnPurchasePrice: currentDBRow.RN_Purchase_Price, 
+            rnCurRent: currentDBRow.RN_Total_Current_Rent, rnEstRent: currentDBRow.RN_Total_Est_Rent, 
+            rnOpEx: currentDBRow.RN_OpEx, rnNOI: currentDBRow.RN_NOI,
+            rnCapRate: currentDBRow.RN_Est_Gross_Cap_Rate, rnCoC: currentDBRow.RN_Cash_on_Cash
         };
 
         if(currentDBRow.Status && currentDBRow.Status.toUpperCase() === 'SOLD') {
@@ -610,12 +613,8 @@
     }
 
     function getDealThemeClass(t) {
-        if (t === 'creative') return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
-        if (t === 'wholesale') return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-        if (t === 'fix_flip') return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
-        if (t === 'novation') return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
-        if (t === 'seller_finance') return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
-        if (t === 'rental') return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20';
+        if (t === 'creative') return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+        if (t === 'wholesale' || t === 'rental') return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20';
         return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
     }
 
@@ -625,39 +624,50 @@
         document.getElementById('ui-address').innerText = data.address;
         document.getElementById('ui-citystate').innerText = data.cityState;
 
-        document.getElementById('ui-pill-price').innerText = data.pillPrice;
-        document.getElementById('ui-pill-detail-1').innerText = data.pillDetail1;
-        document.getElementById('ui-pill-detail-2').innerText = data.pillDetail2;
+        document.getElementById('ui-pill-price').innerText = data.pill1;
+        document.getElementById('ui-pill-detail-1').innerText = data.pill2;
+        document.getElementById('ui-pill-detail-2').innerText = data.pill3;
 
-        document.getElementById('ui-kpi-1-label').innerText = data.kpi1Label; document.getElementById('ui-kpi-1-value').innerText = data.kpi1Value; document.getElementById('ui-kpi-1-desc').innerText = data.kpi1Desc;
-        document.getElementById('ui-kpi-2-label').innerText = data.kpi2Label; document.getElementById('ui-kpi-2-value').innerText = data.kpi2Value; document.getElementById('ui-kpi-2-desc').innerText = data.kpi2Desc;
-        document.getElementById('ui-kpi-3-label').innerText = data.kpi3Label; document.getElementById('ui-kpi-3-value').innerText = data.kpi3Value; document.getElementById('ui-kpi-3-desc').innerText = data.kpi3Desc;
+        document.getElementById('ui-kpi-1-label').innerText = data.info1Label; document.getElementById('ui-kpi-1-value').innerText = data.info1Value; document.getElementById('ui-kpi-1-desc').innerText = data.info1Desc;
+        document.getElementById('ui-kpi-2-label').innerText = data.info2Label; document.getElementById('ui-kpi-2-value').innerText = data.info2Value; document.getElementById('ui-kpi-2-desc').innerText = data.info2Desc;
+        document.getElementById('ui-kpi-3-label').innerText = data.info3Label; document.getElementById('ui-kpi-3-value').innerText = data.info3Value; document.getElementById('ui-kpi-3-desc').innerText = data.info3Desc;
 
-        document.getElementById('ui-narrative-1-title').innerText = data.nav1Title; document.getElementById('ui-narrative-1-desc').innerText = data.nav1Desc;
-        document.getElementById('ui-narrative-2-title').innerText = data.nav2Title; document.getElementById('ui-narrative-2-desc').innerText = data.nav2Desc;
+        document.getElementById('ui-box-1-title').innerText = data.box1Title; document.getElementById('ui-box-1-desc').innerText = data.box1Desc;
+        document.getElementById('ui-box-2-title').innerText = data.box2Title; document.getElementById('ui-box-2-desc').innerText = data.box2Desc;
 
+        // Layout switches based on Deal Type
         document.querySelectorAll('.hidden-module').forEach(el => el.classList.add('hidden-module'));
         if(currentDBRow.Status && currentDBRow.Status.toUpperCase() === 'SOLD') document.getElementById('soldOverlayBanner').classList.remove('hidden-module');
+
+        // Setup Top KPIs based on Deal Type
+        if (data.dealType === 'creative') {
+            document.getElementById('creative-kpis').classList.remove('hidden-module');
+        } else {
+            document.getElementById('wholesale-kpis').classList.remove('hidden-module');
+            document.getElementById('ui-ws-kpi-1-label').innerText = data.wsInfo1Label;
+            document.getElementById('ui-ws-kpi-1-value').innerText = data.wsInfo1Value;
+            if (data.wsInfo1Link && data.wsInfo1Link.trim() !== '') {
+                const wrapper = document.getElementById('ws-kpi-1-wrapper');
+                wrapper.onclick = () => window.open(data.wsInfo1Link, '_blank');
+                document.getElementById('ui-ws-kpi-1-label').innerHTML += ' <span class="text-cyan-400 text-[10px] ml-2">↗ OPEN LINK</span>';
+            }
+            document.getElementById('ui-ws-kpi-2-label').innerText = data.wsInfo2Label;
+            document.getElementById('ui-ws-kpi-2-value').innerText = data.wsInfo2Value;
+            document.getElementById('ui-ws-kpi-2-desc').innerText = data.wsInfo2Desc;
+            
+            document.getElementById('ui-ws-kpi-3-specs').innerText = data.wsInfo3Specs || 'N/A';
+            document.getElementById('ui-ws-kpi-3-notes').innerText = data.wsInfo3Notes || 'N/A';
+        }
 
         switch (data.dealType) {
             case 'creative':
                 document.getElementById('module-creative-table').classList.remove('hidden-module');
                 document.getElementById('module-charts').classList.remove('hidden-module');
                 renderCreativeTable(data); renderLineCharts(data); break;
-            case 'seller_finance':
-                document.getElementById('module-seller-finance-table').classList.remove('hidden-module');
-                document.getElementById('module-charts').classList.remove('hidden-module');
-                renderSellerFinanceTable(data); renderLineCharts(data); break;
             case 'wholesale':
-            case 'fix_flip':
                 document.getElementById('module-wholesale-table').classList.remove('hidden-module');
-                document.getElementById('ws-table-title').innerText = data.dealType === 'wholesale' ? 'Wholesale Acquisition' : 'Fix & Flip Profitability';
                 document.getElementById('module-doughnut-chart').classList.remove('hidden-module');
                 renderWholesaleTable(data); renderDoughnutChart(data, 'wholesale'); break;
-            case 'novation':
-                document.getElementById('module-novation-table').classList.remove('hidden-module');
-                document.getElementById('module-doughnut-chart').classList.remove('hidden-module');
-                renderNovationTable(data); renderDoughnutChart(data, 'novation'); break;
             case 'rental':
                 document.getElementById('module-rental-table').classList.remove('hidden-module');
                 document.getElementById('module-doughnut-chart').classList.remove('hidden-module');
@@ -667,44 +677,67 @@
 
     function renderCreativeTable(data) {
         document.getElementById('ui-creative-tbody').innerHTML = `
-            <tr><td class="px-6 py-4 font-semibold text-gray-200">Interest %</td><td class="px-6 py-4 font-bold text-brand-emerald bg-indigo-950/10 text-lg">${data.sub2Rate}</td><td class="px-6 py-4 text-red-400 text-lg font-medium">${data.marketRate}</td><td class="px-6 py-4 text-brand-emerald font-bold">Massive Advantage</td></tr>
-            <tr class="bg-gray-950/20"><td class="px-6 py-4 font-semibold text-gray-200">Principal & Interest (P&I)</td><td class="px-6 py-4 font-bold text-white bg-indigo-950/10">$${data.sub2PI.toFixed(2)}</td><td class="px-6 py-4">$${data.marketPI.toFixed(2)}</td><td class="px-6 py-4 text-brand-emerald font-semibold">Lower Overhead</td></tr>
-            <tr class="bg-brand-emerald/10"><td class="px-6 py-4 font-bold text-white">Interest Paid Over Life</td><td class="px-6 py-4 font-bold text-brand-emerald bg-indigo-950/10">Protected</td><td class="px-6 py-4 text-red-400">High Exposure</td><td class="px-6 py-4 text-brand-emerald font-extrabold">+${data.totalInterestSaved} Net Savings</td></tr>
-        `;
-    }
-
-    function renderSellerFinanceTable(data) {
-        document.getElementById('ui-seller-finance-tbody').innerHTML = `
-            <tr><td class="px-6 py-4 font-semibold text-gray-200 text-left pl-6">Down Payment Req.</td><td class="px-6 py-4 font-bold text-brand-emerald bg-indigo-950/10 text-lg">${data.sfDownPayment}</td><td class="px-6 py-4 text-gray-400 border-l border-gray-800 text-lg font-medium">Standard 20%</td><td class="px-6 py-4 text-brand-emerald font-bold">Lower Entry Barrier</td></tr>
-            <tr class="bg-gray-950/20"><td class="px-6 py-4 font-semibold text-gray-200 text-left pl-6">Interest Rate</td><td class="px-6 py-4 font-bold text-white bg-indigo-950/10">${data.sub2Rate || data.marketRate || 'N/A'}</td><td class="px-6 py-4 border-l border-gray-800 text-red-400">Market Avg</td><td class="px-6 py-4 text-brand-emerald font-semibold">Yield Protection</td></tr>
-            <tr><td class="px-6 py-4 font-semibold text-gray-200 text-left pl-6">Amortization / Balloon</td><td class="px-6 py-4 font-bold text-white bg-indigo-950/10">${data.sfAmort} / ${data.sfBalloon}</td><td class="px-6 py-4 border-l border-gray-800">30 Yrs / None</td><td class="px-6 py-4 text-indigo-400 font-semibold">Flexible Terms</td></tr>
-            <tr class="bg-brand-emerald/10"><td class="px-6 py-4 font-bold text-white text-left pl-6">Monthly P&I Obligation</td><td class="px-6 py-4 font-bold text-brand-emerald bg-indigo-950/10 text-lg">${data.sfPayment}</td><td class="px-6 py-4 border-l border-gray-800 text-red-400 text-lg">Higher</td><td class="px-6 py-4 text-brand-emerald font-extrabold">Superior DSCR</td></tr>
+            <tr><td class="px-6 py-4 font-semibold text-gray-200 text-left">Interest %</td><td class="px-6 py-4 font-bold text-white bg-purple-950/10 text-lg">${data.sub2Rate}</td><td class="px-6 py-4 text-white text-lg font-medium">${data.marketRate}</td><td class="px-6 py-4 text-cyan-400 font-bold text-right">Massive Advantage</td></tr>
+            <tr class="bg-gray-950/20"><td class="px-6 py-4 font-semibold text-gray-200 text-left">Principal & Interest (P&I)</td><td class="px-6 py-4 font-bold text-white bg-purple-950/10">$${data.sub2PI.toFixed(2)}</td><td class="px-6 py-4 text-white">$${data.marketPI.toFixed(2)}</td><td class="px-6 py-4 text-cyan-400 font-semibold text-right">Lower Overhead</td></tr>
+            <tr class="bg-purple-950/20"><td class="px-6 py-4 font-bold text-white text-left">Interest Paid Over Life</td><td class="px-6 py-4 font-bold text-white bg-purple-950/10">Protected</td><td class="px-6 py-4 text-white">High Exposure</td><td class="px-6 py-4 text-cyan-400 font-extrabold text-right">+${data.totalInterestSaved} Net Savings</td></tr>
         `;
     }
 
     function renderWholesaleTable(data) {
         document.getElementById('ui-wholesale-tbody').innerHTML = `
-            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Base Purchase Price</td><td class="px-6 py-4 font-bold text-white bg-gray-900/50 text-right">${data.purchasePrice || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Estimated ARV</td><td class="px-6 py-4 font-bold text-indigo-400 bg-gray-900/50 text-right pr-6">${data.arv || '$0'}</td></tr>
-            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Est. Closing Costs (Buy)</td><td class="px-6 py-4 font-medium text-gray-400 bg-gray-900/50 text-right">${data.closingCosts || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Realtor/Disposition Fees</td><td class="px-6 py-4 font-medium text-red-400 bg-gray-900/50 text-right pr-6">${data.realtorFees || '$0'}</td></tr>
-            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Rehab / Repair Budget</td><td class="px-6 py-4 font-bold text-brand-gold bg-gray-900/50 text-right">${data.repairBudget || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Holding & Carry Costs</td><td class="px-6 py-4 font-medium text-gray-400 bg-gray-900/50 text-right pr-6">${data.holdingCosts || '$0'}</td></tr>
-            <tr class="bg-gray-950/40 border-t border-gray-700"><td class="px-6 py-5 font-bold text-white text-lg text-left pl-6">Total Cost Basis</td><td class="px-6 py-5 font-extrabold text-white bg-gray-900/80 text-lg text-right">${data.totalBasis || '$0'}</td><td class="px-6 py-5 font-bold text-brand-emerald border-l border-gray-800 pl-6 text-left text-lg">Projected Net Net Return</td><td class="px-6 py-5 font-black text-brand-emerald bg-emerald-900/20 text-xl text-right pr-6">${data.netReturn || '$0'}</td></tr>
-        `;
-    }
-
-    function renderNovationTable(data) {
-        document.getElementById('ui-novation-tbody').innerHTML = `
-            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Seller Base Guarantee</td><td class="px-6 py-4 font-bold text-white bg-gray-900/50 text-right">${data.nvSellerBase || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Retail Exit ARV</td><td class="px-6 py-4 font-bold text-indigo-400 bg-gray-900/50 text-right pr-6">${data.nvARV || '$0'}</td></tr>
-            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Rehab Capital Funded</td><td class="px-6 py-4 font-bold text-brand-gold bg-gray-900/50 text-right">${data.nvRehab || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Disposition Costs</td><td class="px-6 py-4 font-medium text-red-400 bg-gray-900/50 text-right pr-6">${data.nvDispCosts || '$0'}</td></tr>
-            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Legal & Carry Setup</td><td class="px-6 py-4 font-medium text-gray-400 bg-gray-900/50 text-right">${data.nvLegal || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Total Gross Profit</td><td class="px-6 py-4 font-bold text-white bg-gray-900/50 text-right pr-6">${data.nvGrossProfit || '$0'}</td></tr>
-            <tr class="bg-gray-950/40 border-t border-gray-700"><td class="px-6 py-5 font-bold text-red-400 text-lg text-left pl-6">Total Capital at Risk</td><td class="px-6 py-5 font-extrabold text-white bg-gray-900/80 text-lg text-right">${data.nvTotalRisk || '$0'}</td><td class="px-6 py-5 font-bold text-brand-emerald border-l border-gray-800 pl-6 text-left text-lg">Partner Net Split (ROI)</td><td class="px-6 py-5 font-black text-brand-emerald bg-emerald-900/20 text-xl text-right pr-6">${data.nvNetROI || '$0'}</td></tr>
+            <tr>
+                <td class="px-6 py-4 text-left pl-6 text-white font-medium">Base Purchase Price</td>
+                <td class="px-6 py-4 text-right font-bold text-white bg-gray-900/40">${data.wsPurchasePrice || '$0'}</td>
+                <td class="px-6 py-4 text-left border-l border-gray-800 pl-6 text-white font-medium">Est. ARV / Turnkey Retail Value</td>
+                <td class="px-6 py-4 text-right pr-6 font-bold text-white bg-gray-900/40">${data.wsArv || '$0'}</td>
+            </tr>
+            <tr>
+                <td class="px-6 py-4 text-left pl-6 text-white font-medium">Est. Rehab / Repair Budget</td>
+                <td class="px-6 py-4 text-right font-bold text-white bg-gray-900/40">${data.wsRepair || '$0'}</td>
+                <td class="px-6 py-4 text-left border-l border-gray-800 pl-6 text-white font-medium">Est. Realtor Fees</td>
+                <td class="px-6 py-4 text-right pr-6 font-bold text-white bg-gray-900/40">${data.wsRealtor || '$0'}</td>
+            </tr>
+            <tr>
+                <td class="px-6 py-4 text-left pl-6 text-white"></td>
+                <td class="px-6 py-4 text-right bg-gray-900/40"></td>
+                <td class="px-6 py-4 text-left border-l border-gray-800 pl-6 text-white font-medium">Est. Closing Costs (1-2%)</td>
+                <td class="px-6 py-4 text-right pr-6 font-bold text-white bg-gray-900/40">${data.wsClosing || '$0'}</td>
+            </tr>
+            <tr class="bg-gray-950/60 border-t border-gray-700">
+                <td class="px-6 py-5 font-bold text-brand-crimson text-lg text-left pl-6">Total Cost Basis</td>
+                <td class="px-6 py-5 font-extrabold text-brand-crimson bg-gray-900/80 text-lg text-right">${data.wsBasis || '$0'}</td>
+                <td class="px-6 py-5 font-bold text-white border-l border-gray-800 pl-6 text-left text-lg">Est. Net Return</td>
+                <td class="px-6 py-5 font-black text-brand-emerald bg-emerald-900/20 text-xl text-right pr-6">${data.wsReturn || '$0'}</td>
+            </tr>
         `;
     }
 
     function renderRentalTable(data) {
         document.getElementById('ui-rental-tbody').innerHTML = `
-            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Asset Base Price</td><td class="px-6 py-4 font-bold text-white bg-gray-900/50 text-right">${data.rnPrice || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Net Operating Income (NOI)</td><td class="px-6 py-4 font-bold text-indigo-400 bg-gray-900/50 text-right pr-6">${data.rnNOI || '$0'}</td></tr>
-            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Monthly Gross Rent</td><td class="px-6 py-4 font-bold text-brand-emerald bg-gray-900/50 text-right">${data.rnRent || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Cap Rate</td><td class="px-6 py-4 font-bold text-brand-gold bg-gray-900/50 text-right pr-6 text-lg">${data.rnCapRate || '0%'}</td></tr>
-            <tr><td class="px-6 py-4 font-semibold text-gray-300 text-left pl-6">Est. Monthly OpEx</td><td class="px-6 py-4 font-medium text-red-400 bg-gray-900/50 text-right">${data.rnOpEx || '$0'}</td><td class="px-6 py-4 font-semibold text-gray-300 border-l border-gray-800 pl-6 text-left">Cash-on-Cash Return</td><td class="px-6 py-4 font-black text-brand-emerald bg-emerald-900/20 text-right pr-6 text-lg">${data.rnCoC || '0%'}</td></tr>
+            <tr>
+                <td class="px-6 py-4 text-left pl-6 text-white font-medium">Base Purchase Price</td>
+                <td class="px-6 py-4 text-right font-bold text-white bg-gray-900/40">${data.rnPurchasePrice || '$0'}</td>
+                <td class="px-6 py-4 text-left border-l border-gray-800 pl-6 text-white font-medium">Est. ARV / Turnkey Retail Value</td>
+                <td class="px-6 py-4 text-right pr-6 font-bold text-white bg-gray-900/40">${data.wsArv || '$0'}</td>
+            </tr>
+            <tr>
+                <td class="px-6 py-4 text-left pl-6 text-white font-medium">Est. Rehab / Repair Budget</td>
+                <td class="px-6 py-4 text-right font-bold text-white bg-gray-900/40">${data.wsRepair || '$0'}</td>
+                <td class="px-6 py-4 text-left border-l border-gray-800 pl-6 text-white font-medium">Total Current Rent</td>
+                <td class="px-6 py-4 text-right pr-6 font-bold text-white bg-gray-900/40">${data.rnCurRent || '$0'}</td>
+            </tr>
+            <tr>
+                <td class="px-6 py-4 text-left pl-6 text-white"></td>
+                <td class="px-6 py-4 text-right bg-gray-900/40"></td>
+                <td class="px-6 py-4 text-left border-l border-gray-800 pl-6 text-white font-medium">Total Estimated Rent</td>
+                <td class="px-6 py-4 text-right pr-6 font-bold text-white bg-gray-900/40">${data.rnEstRent || '$0'}</td>
+            </tr>
+            <tr class="bg-gray-950/60 border-t border-gray-700">
+                <td class="px-6 py-5 font-bold text-brand-crimson text-lg text-left pl-6">Total Cost Basis</td>
+                <td class="px-6 py-5 font-extrabold text-brand-crimson bg-gray-900/80 text-lg text-right">${data.wsBasis || '$0'}</td>
+                <td class="px-6 py-5 font-bold text-white border-l border-gray-800 pl-6 text-left text-lg">Estimated Gross Cap Rate</td>
+                <td class="px-6 py-5 font-black text-brand-emerald bg-emerald-900/20 text-xl text-right pr-6">${data.rnCapRate || '0%'}</td>
+            </tr>
         `;
     }
 
@@ -717,8 +750,8 @@
         lineChart1 = new Chart(ctxPayment, {
             type: 'bar',
             data: { labels: ['Proposed Deal', "Standard Market"], datasets: [
-                { label: 'P&I', data: [data.sub2PI, data.marketPI], backgroundColor: '#4f46e5' },
-                { label: 'Escrow', data: [data.escrow, data.escrow], backgroundColor: '#10b981' }
+                { label: 'P&I', data: [data.sub2PI, data.marketPI], backgroundColor: '#a855f7' },
+                { label: 'Escrow', data: [data.escrow, data.escrow], backgroundColor: '#06b6d4' }
             ]},
             options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }
         });
@@ -728,8 +761,8 @@
         lineChart2 = new Chart(ctxInterest, {
             type: 'line',
             data: { labels: ['Year 1', 'Year 10', 'Year 20', 'Year 30'], datasets: [
-                { label: "Standard Market", data: [m1, m1*7, m1*13, m1*16], borderColor: '#dc2626', fill: true, backgroundColor: 'rgba(220, 38, 38, 0.1)' },
-                { label: 'Proposed Deal', data: [s1, s1*4, s1*7, s1*9], borderColor: '#10b981', fill: true, backgroundColor: 'rgba(16, 185, 129, 0.1)' }
+                { label: "Standard Market", data: [m1, m1*7, m1*13, m1*16], borderColor: '#fff', fill: true, backgroundColor: 'rgba(255, 255, 255, 0.1)' },
+                { label: 'Proposed Deal', data: [s1, s1*4, s1*7, s1*9], borderColor: '#06b6d4', fill: true, backgroundColor: 'rgba(6, 182, 212, 0.1)' }
             ]},
             options: { responsive: true, maintainAspectRatio: false }
         });
@@ -741,18 +774,14 @@
         let chartLabels = []; let chartData = []; let chartColors = [];
         const clean = (val) => parseInt((val || '0').replace(/[^0-9]/g, '')) || 0;
         
-        if (type === 'wholesale' || type === 'fix_flip') {
-            chartLabels = ['Purchase/Basis', 'Rehab Budget', 'Hold/Close Fees', 'Net Profit'];
-            chartData = [clean(data.purchasePrice), clean(data.repairBudget), clean(data.closingCosts) + clean(data.holdingCosts), clean(data.netReturn)];
-            chartColors = ['#4f46e5', '#f59e0b', '#dc2626', '#10b981'];
-        } else if (type === 'novation') {
-            chartLabels = ['Seller Guarantee', 'Rehab Capital', 'Legal/Disp Fees', 'Investor Net ROI'];
-            chartData = [clean(data.nvSellerBase), clean(data.nvRehab), clean(data.nvLegal) + clean(data.nvDispCosts), clean(data.nvNetROI)];
-            chartColors = ['#6366f1', '#f59e0b', '#dc2626', '#10b981'];
+        if (type === 'wholesale') {
+            chartLabels = ['Purchase/Basis', 'Rehab Budget', 'Est. Realtor & Closing', 'Net Return'];
+            chartData = [clean(data.wsPurchasePrice), clean(data.wsRepair), clean(data.wsRealtor) + clean(data.wsClosing), clean(data.wsReturn)];
+            chartColors = ['#06b6d4', '#f59e0b', '#dc2626', '#10b981'];
         } else if (type === 'rental') {
-            chartLabels = ['Annual Net Income (NOI)', 'Annual OpEx', 'Annual Vacancy/Maint'];
-            chartData = [clean(data.rnNOI), clean(data.rnOpEx) * 12, clean(data.rnOpEx) * 3];
-            chartColors = ['#10b981', '#dc2626', '#f59e0b'];
+            chartLabels = ['Purchase/Basis', 'Rehab Budget', 'Est. Annual OpEx', 'Net Operating Income'];
+            chartData = [clean(data.rnPurchasePrice), clean(data.wsRepair), clean(data.rnOpEx) * 12, clean(data.rnNOI)];
+            chartColors = ['#06b6d4', '#f59e0b', '#dc2626', '#10b981'];
         }
 
         pieChart = new Chart(ctx, {
@@ -760,11 +789,12 @@
             data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: chartColors, borderWidth: 0, hoverOffset: 10 }] },
             options: {
                 responsive: true, maintainAspectRatio: false, cutout: '65%',
-                plugins: { legend: { position: 'bottom', labels: { color: '#f3f4f6' } }, datalabels: { color: '#fff', font: { weight: 'bold', size: 12 }, formatter: (v) => '$' + v.toLocaleString() } }
+                plugins: { legend: { position: 'bottom', labels: { color: '#f3f4f6' } }, datalabels: { color: '#ffffff', font: { weight: 'bold', size: 12 }, formatter: (v) => '$' + v.toLocaleString() } }
             }
         });
     }
 
+    // Background Animation Matrix
     const canvas = document.getElementById('gridCanvas');
     const ctx = canvas.getContext('2d');
     let gridSize = 55; let sparks = []; let lastSpanSpawn = 0;
