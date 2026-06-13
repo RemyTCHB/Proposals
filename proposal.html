@@ -23,7 +23,6 @@
         }
       }
     }
-    // Global chart setting for pure white text labels
     Chart.defaults.color = '#ffffff';
   </script>
   
@@ -51,21 +50,10 @@
     }
     #mouseGlow::before {
         content: ""; position: absolute; inset: 0; border-radius: 50%;
-        background: radial-gradient(circle at center, 
-            transparent 15%, 
-            rgba(16, 185, 129, 0.25) 35%,  /* Emerald Inner */
-            rgba(79, 70, 229, 0.25) 60%,   /* Indigo Middle */
-            rgba(220, 38, 38, 0.25) 85%,   /* Crimson Outer */
-            transparent 100%
-        );
-        filter: blur(16px);
-        opacity: 0.7;
-        animation: color-cycle 5s linear infinite;
+        background: radial-gradient(circle at center, transparent 15%, rgba(16, 185, 129, 0.25) 35%, rgba(79, 70, 229, 0.25) 60%, rgba(220, 38, 38, 0.25) 85%, transparent 100%);
+        filter: blur(16px); opacity: 0.7; animation: color-cycle 5s linear infinite;
     }
-    @keyframes color-cycle {
-        0% { filter: blur(16px) hue-rotate(0deg); }
-        100% { filter: blur(16px) hue-rotate(360deg); }
-    }
+    @keyframes color-cycle { 0% { filter: blur(16px) hue-rotate(0deg); } 100% { filter: blur(16px) hue-rotate(360deg); } }
     
     body, a, button, input, [onclick], .cursor-pointer, .cursor-not-allowed { cursor: none !important; }
     
@@ -75,17 +63,13 @@
     body.mouse-active #cursor-dot, body.mouse-active #cursor-ring { opacity: 1; }
     body.cursor-hover #cursor-ring { width: 56px; height: 56px; background-color: rgba(79, 70, 229, 0.1); border-color: rgba(220, 38, 38, 0.8); }
     body.cursor-hover #cursor-dot { transform: translate(-50%, -50%) scale(1.5); background: #10b981; }
-
     body.cursor-locked #cursor-ring { width: 44px; height: 44px; background-color: rgba(220, 38, 38, 0.1); border-color: rgba(220, 38, 38, 0.8); border-style: dashed; }
     body.cursor-locked #cursor-dot { transform: translate(-50%, -50%) scale(1.2); background: #dc2626; }
 
     .gate-unlocked #secureGate { display: none !important; }
     .hidden-module { display: none !important; }
 
-    @keyframes pan-x {
-        0% { background-position: 100% center; }
-        100% { background-position: 0% center; }
-    }
+    @keyframes pan-x { 0% { background-position: 100% center; } 100% { background-position: 0% center; } }
     .gradient-ring-border {
         position: absolute; inset: 0; border-radius: 50%; padding: 3.5px;
         background: linear-gradient(to right, #4f46e5, #10b981, #dc2626, #10b981, #4f46e5);
@@ -103,7 +87,6 @@
     @keyframes pulse-glow-strong { 0% { opacity: 0.3; transform: scale(0.9); } 100% { opacity: 0.8; transform: scale(1.1); } }
     @keyframes icon-pulse { 0%, 100% { transform: scale(0.85); opacity: 0.6; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); } 50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 15px rgba(255,255,255,0.6)); } }
     .animate-icon-pulse { animation: icon-pulse 2s ease-in-out infinite; }
-
     .animate-text-gradient-pulse {
         background: linear-gradient(to right, #4f46e5, #10b981, #dc2626, #10b981, #4f46e5);
         background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent;
@@ -111,14 +94,13 @@
     }
     @keyframes text-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-    /* Print Break Logic */
+    /* Print Formatting */
     @media print {
       @page { size: letter portrait; margin: 0.4in; }
       html, body { background-color: #0b0f19 !important; color: #f3f4f6 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       .no-print { display: none !important; }
       .gradient-border::before { display: none !important; content: none !important; }
       .gradient-border { border: 1px solid #1e293b !important; border-radius: 0.75rem !important; background-color: #111827 !important; }
-      
       .print-break-inside-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
       table, tr, td, th { page-break-inside: avoid !important; }
       .chart-container-print { height: 260px !important; page-break-inside: avoid !important; }
@@ -147,7 +129,7 @@
         
         <div id="gateStep1Container" class="space-y-4">
             <input type="email" id="gateEmailInput" placeholder="Email Address" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-text">
-            <input type="password" id="gateAccessKeyInput" placeholder="Access Key / Admin Pass" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-text">
+            <input type="password" id="gateAccessKeyInput" placeholder="Access Key" class="w-full bg-[#18182d] border border-white/10 rounded-lg px-4 py-3 text-center text-white tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-text">
         </div>
 
         <div id="gateStep2Container" class="space-y-4 hidden mt-2">
@@ -157,7 +139,6 @@
         </div>
 
         <p id="gateErrorMessage" class="text-xs text-brand-crimson font-medium text-center hidden mt-4">Incorrect Security Authorization Code.</p>
-        
         <button id="gateAuthButton" onclick="handleGateAuthStep()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 mt-4 cursor-pointer">
             Send Verification Code
         </button>
@@ -196,11 +177,11 @@
       </header>
 
       <div class="mt-6 flex justify-center text-center">
-        <div class="inline-flex flex-wrap justify-center items-center gap-2 px-6 py-3 rounded-xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-indigo-950/60 to-purple-950/60 text-indigo-200 border border-indigo-500/30 shadow-[0_4px_20px_rgba(99,102,241,0.15)] cursor-pointer">
+        <div class="inline-flex flex-wrap justify-center items-center gap-2 px-6 py-3 rounded-xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-indigo-950/60 to-gray-900/60 text-gray-200 border border-white/10 shadow-[0_4px_20px_rgba(79,70,229,0.15)] cursor-pointer">
           <span id="ui-pill-price" class="text-white font-black">...</span>
-          <span class="text-indigo-400/40">|</span>
+          <span class="text-gray-500">|</span>
           <span id="ui-pill-detail-1">...</span>
-          <span class="text-indigo-400/40">[</span><span id="ui-pill-detail-2" class="text-brand-emerald font-black">...</span><span class="text-indigo-400/40">]</span>
+          <span class="text-gray-500">[</span><span id="ui-pill-detail-2" class="text-brand-emerald font-black">...</span><span class="text-gray-500">]</span>
         </div>
       </div>
 
@@ -212,14 +193,20 @@
               <p id="ui-kpi-1-label" class="text-xs uppercase font-semibold text-purple-400 tracking-wider">...</p>
               <h3 id="ui-kpi-1-value" class="text-3xl lg:text-4xl font-extrabold text-white mt-1">...</h3>
             </div>
+            <div class="w-10 h-10 rounded-full border border-gray-800 overflow-hidden bg-gray-950 flex items-center justify-center flex-shrink-0 group-hover:border-purple-500/50 transition-colors">
+              <img class="w-full h-full object-contain" src="icon.svg" onerror="this.style.display='none'">
+            </div>
           </div>
           <p id="ui-kpi-1-desc" class="text-xs text-gray-300 mt-4 leading-relaxed">...</p>
         </div>
         <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
           <div class="flex justify-between items-start">
             <div>
-              <p id="ui-kpi-2-label" class="text-xs uppercase font-semibold text-cyan-400 tracking-wider">...</p>
+              <p id="ui-kpi-2-label" class="text-xs uppercase font-semibold text-indigo-400 tracking-wider">...</p>
               <h3 id="ui-kpi-2-value" class="text-3xl lg:text-4xl font-extrabold text-white mt-1">...</h3>
+            </div>
+            <div class="w-10 h-10 rounded-full border border-gray-800 overflow-hidden bg-gray-950 flex items-center justify-center flex-shrink-0 group-hover:border-indigo-500/50 transition-colors">
+              <img class="w-full h-full object-contain" src="icon.svg" onerror="this.style.display='none'">
             </div>
           </div>
           <p id="ui-kpi-2-desc" class="text-xs text-gray-300 mt-4 leading-relaxed">...</p>
@@ -227,8 +214,11 @@
         <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
           <div class="flex justify-between items-start">
             <div>
-              <p id="ui-kpi-3-label" class="text-xs uppercase font-semibold text-brand-gold tracking-wider">...</p>
+              <p id="ui-kpi-3-label" class="text-xs uppercase font-semibold text-brand-crimson tracking-wider">...</p>
               <h3 id="ui-kpi-3-value" class="text-3xl lg:text-4xl font-extrabold text-white mt-1">...</h3>
+            </div>
+            <div class="w-10 h-10 rounded-full border border-gray-800 overflow-hidden bg-gray-950 flex items-center justify-center flex-shrink-0 group-hover:border-red-500/50 transition-colors">
+              <img class="w-full h-full object-contain" src="icon.svg" onerror="this.style.display='none'">
             </div>
           </div>
           <p id="ui-kpi-3-desc" class="text-xs text-gray-300 mt-4 leading-relaxed">...</p>
@@ -238,35 +228,75 @@
       <!-- WHOLESALE / RENTAL KPIs -->
       <div class="mt-6 flex flex-col gap-6 hidden-module" id="wholesale-kpis">
          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div id="ws-kpi-1-wrapper" class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
-              <div class="flex justify-between items-start">
-                <div>
-                  <p id="ui-ws-kpi-1-label" class="text-xs uppercase font-semibold text-cyan-400 tracking-wider">...</p>
-                  <h3 id="ui-ws-kpi-1-value" class="text-3xl lg:text-4xl font-extrabold text-white mt-1">...</h3>
-                </div>
-                <svg class="w-5 h-5 text-cyan-400 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-              </div>
+            <div id="ws-kpi-1-wrapper" class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-center items-center text-center transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
+              <p id="ui-ws-kpi-1-label" class="text-xs uppercase font-semibold text-cyan-400 tracking-wider">...</p>
+              <h3 id="ui-ws-kpi-1-value" class="text-3xl lg:text-4xl font-extrabold text-white mt-2">...</h3>
             </div>
-            <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-between transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
-              <div class="flex justify-between items-start">
-                <div>
-                  <p id="ui-ws-kpi-2-label" class="text-xs uppercase font-semibold text-cyan-400 tracking-wider">...</p>
-                  <h3 id="ui-ws-kpi-2-value" class="text-3xl lg:text-4xl font-extrabold text-white mt-1">...</h3>
-                </div>
-              </div>
+            <div class="gradient-border bg-gray-900/50 p-6 rounded-xl flex flex-col justify-center items-center text-center transform hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
+              <p id="ui-ws-kpi-2-label" class="text-xs uppercase font-semibold text-cyan-400 tracking-wider">...</p>
+              <h3 id="ui-ws-kpi-2-value" class="text-3xl lg:text-4xl font-extrabold text-white mt-2">...</h3>
               <p id="ui-ws-kpi-2-desc" class="text-xs text-gray-300 mt-4 leading-relaxed">...</p>
             </div>
          </div>
-         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 gradient-border bg-gray-900/50 p-6 rounded-xl">
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 gradient-border bg-gray-900/50 p-6 rounded-xl">
             <div>
-               <h4 class="text-base font-extrabold text-white mb-2 flex items-center gap-2"><span class="text-cyan-400 font-bold text-sm">●</span> Property Specs</h4>
-               <p id="ui-ws-kpi-3-specs" class="text-xs text-gray-300 leading-relaxed whitespace-pre-wrap">...</p>
+               <h4 class="text-base font-extrabold text-white mb-4">Property Specs</h4>
+               <div id="ui-ws-kpi-3-specs" class="text-xs text-gray-300 leading-relaxed">...</div>
             </div>
             <div>
-               <h4 class="text-base font-extrabold text-white mb-2 flex items-center gap-2"><span class="text-purple-400 font-bold text-sm">●</span> Important Notes</h4>
-               <p id="ui-ws-kpi-3-notes" class="text-xs text-gray-300 leading-relaxed whitespace-pre-wrap">...</p>
+               <h4 class="text-base font-extrabold text-white mb-4">Important Notes</h4>
+               <div id="ui-ws-kpi-3-notes" class="text-xs text-gray-300 leading-relaxed">...</div>
             </div>
          </div>
+      </div>
+    </div>
+
+    <!-- SUBJECT-TO WEALTH MILESTONES (DYNAMIC) -->
+    <div id="creative-milestones" class="print-break-inside-avoid mt-12 mb-8 hidden-module">
+      <div class="bg-gradient-to-br from-indigo-950/30 to-brand-crimson/10 p-8 rounded-2xl border border-gray-800 text-center flex flex-col items-center">
+        <div class="max-w-6xl mx-auto flex flex-col items-center">
+          <div class="text-center mb-8">
+            <span class="text-brand-emerald font-bold uppercase text-xs tracking-wider block text-center">Holding Horizon Projection</span>
+            <h3 class="text-2xl font-black text-white mt-1 text-center">Projected Wealth Accumulation Milestones</h3>
+            <p class="text-sm text-gray-300 mt-2 text-center">Cumulative financial advantage breakdown comparing the Sub2 deal metrics over standard options.</p>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full justify-center">
+            
+            <!-- Year 5 -->
+            <div class="bg-gray-900/80 p-5 rounded-xl border border-gray-800 hover:border-gray-700 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300 text-center flex flex-col justify-between">
+              <span class="text-xs font-bold text-indigo-400 tracking-wider uppercase block text-center">Year 5 Milestone</span>
+              <div class="mt-3"><p class="text-[10px] text-gray-400 text-center">Cumulative Cash Flow Saved</p><p id="ui-sub2-y5-cf" class="text-xl font-bold text-white text-center">...</p></div>
+              <div class="mt-2 pt-2 border-t border-gray-800"><p class="text-[10px] text-gray-400 text-center">Cumulative Interest Saved</p><p id="ui-sub2-y5-int" class="text-lg font-bold text-brand-emerald text-center">...</p></div>
+              <div class="mt-3 text-center bg-indigo-950/50 rounded py-1"><p class="text-[10px] text-gray-400 text-center">Combined Yield Boost</p><p id="ui-sub2-y5-tot" class="text-sm font-bold text-white text-center">...</p></div>
+            </div>
+
+            <!-- Year 10 -->
+            <div class="bg-gray-900/80 p-5 rounded-xl border border-gray-800 hover:border-gray-700 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300 text-center flex flex-col justify-between">
+              <span class="text-xs font-bold text-indigo-400 tracking-wider uppercase block text-center">Year 10 Milestone</span>
+              <div class="mt-3"><p class="text-[10px] text-gray-400 text-center">Cumulative Cash Flow Saved</p><p id="ui-sub2-y10-cf" class="text-xl font-bold text-white text-center">...</p></div>
+              <div class="mt-2 pt-2 border-t border-gray-800"><p class="text-[10px] text-gray-400 text-center">Cumulative Interest Saved</p><p id="ui-sub2-y10-int" class="text-lg font-bold text-brand-emerald text-center">...</p></div>
+              <div class="mt-3 text-center bg-indigo-950/50 rounded py-1"><p class="text-[10px] text-gray-400 text-center">Combined Yield Boost</p><p id="ui-sub2-y10-tot" class="text-sm font-bold text-white text-center">...</p></div>
+            </div>
+
+            <!-- Year 15 -->
+            <div class="bg-gray-900/80 p-5 rounded-xl border border-gray-800 hover:border-gray-700 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300 text-center flex flex-col justify-between">
+              <span class="text-xs font-bold text-indigo-400 tracking-wider uppercase block text-center">Year 15 Milestone</span>
+              <div class="mt-3"><p class="text-[10px] text-gray-400 text-center">Cumulative Cash Flow Saved</p><p id="ui-sub2-y15-cf" class="text-xl font-bold text-white text-center">...</p></div>
+              <div class="mt-2 pt-2 border-t border-gray-800"><p class="text-[10px] text-gray-400 text-center">Cumulative Interest Saved</p><p id="ui-sub2-y15-int" class="text-lg font-bold text-brand-emerald text-center">...</p></div>
+              <div class="mt-3 text-center bg-indigo-950/50 rounded py-1"><p class="text-[10px] text-gray-400 text-center">Combined Yield Boost</p><p id="ui-sub2-y15-tot" class="text-sm font-bold text-white text-center">...</p></div>
+            </div>
+
+            <!-- Year 30 (Full Maturity) -->
+            <div class="bg-gradient-to-b from-indigo-950/60 to-gray-900/80 p-5 rounded-xl border border-indigo-500/30 hover:border-indigo-400/50 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-[0_15px_30px_rgba(99,102,241,0.2)] transition-all duration-300 text-center flex flex-col justify-between">
+              <span class="text-xs font-bold text-brand-gold tracking-wider uppercase block text-center">Full Maturity (30 Yr)</span>
+              <div class="mt-3"><p class="text-[10px] text-gray-400 text-center">Cumulative Cash Flow Saved</p><p id="ui-sub2-y30-cf" class="text-xl font-bold text-white text-center">...</p></div>
+              <div class="mt-2 pt-2 border-t border-gray-800"><p class="text-[10px] text-gray-400 text-center">Total Interest Saved</p><p id="ui-sub2-y30-int" class="text-lg font-bold text-brand-emerald text-center">...</p></div>
+              <div class="mt-3 text-center bg-brand-purple/20 rounded py-1"><p class="text-[10px] text-gray-300 text-center">Lifetime Advantage</p><p id="ui-sub2-y30-tot" class="text-sm font-black text-white text-center">...</p></div>
+            </div>
+
+          </div>
+        </div>
       </div>
     </div>
 
@@ -275,9 +305,9 @@
         <div id="module-creative-table" class="hidden-module bg-gray-900/40 rounded-2xl border border-gray-800 overflow-hidden mb-8">
             <div class="p-6 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 flex justify-between items-center">
             <div><h3 class="text-lg font-bold text-white">Subject-To / Creative Deal Architecture</h3><p class="text-xs text-gray-400">Comparing Sub2/Creative against standard market debt.</p></div>
-            <button onclick="window.print()" class="no-print bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all cursor-pointer">Export PDF</button>
+            <button onclick="window.print()" class="no-print bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all cursor-pointer">Export PDF</button>
             </div>
-            <div class="overflow-x-auto"><table class="w-full text-center text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase"><tr><th class="px-6 py-4 text-left">Metric</th><th class="px-6 py-4 text-purple-400 bg-purple-950/20 font-bold">🔥 Proposed Deal</th><th class="px-6 py-4">Standard Market</th><th class="px-6 py-4 text-cyan-400 text-right">Net Advantage</th></tr></thead><tbody id="ui-creative-tbody" class="divide-y divide-gray-800"></tbody></table></div>
+            <div class="overflow-x-auto"><table class="w-full text-center text-sm text-gray-300"><thead class="bg-gray-950/60 text-xs text-gray-400 uppercase"><tr><th class="px-6 py-4 text-left">Metric</th><th class="px-6 py-4 text-purple-400 bg-purple-950/20 font-bold">🔥 Proposed Deal</th><th class="px-6 py-4">Standard Market</th><th class="px-6 py-4 text-brand-emerald text-right">Net Advantage</th></tr></thead><tbody id="ui-creative-tbody" class="divide-y divide-gray-800"></tbody></table></div>
         </div>
 
         <!-- WHOLESALE TABLE -->
@@ -301,7 +331,6 @@
 
     <!-- NARRATIVE BOXES -->
     <div id="narrative-container" class="print-break-inside-avoid flex flex-col gap-6 cursor-pointer mb-12">
-        <!-- Box 1 -->
         <div class="bg-gray-900/20 p-6 rounded-xl border border-gray-800 flex gap-4 text-left hover:bg-gray-900/40 transition-all">
           <div class="w-10 h-10 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden"><img class="w-full h-full object-contain scale-110" src="icon.svg" onerror="this.style.display='none'"></div>
           <div>
@@ -310,7 +339,6 @@
           </div>
         </div>
 
-        <!-- Box 2 -->
         <div class="bg-gray-900/20 p-6 rounded-xl border border-gray-800 flex gap-4 text-left hover:bg-gray-900/40 transition-all">
           <div class="w-10 h-10 rounded-full border border-white/10 bg-transparent flex items-center justify-center flex-shrink-0 overflow-hidden"><img class="w-full h-full object-contain scale-110" src="icon.svg" onerror="this.style.display='none'"></div>
           <div>
@@ -323,32 +351,45 @@
     <!-- CHARTS -->
     <div class="print-break-inside-avoid">
         <div id="module-charts" class="hidden-module mb-12 cursor-pointer">
-        <div class="text-center mb-6 no-print md:block">
-            <span class="text-purple-400 font-bold uppercase text-xs tracking-wider">Visual Performance Analytics</span>
-            <h3 class="text-2xl font-black text-white mt-1">Direct Comparative Visualizations</h3>
-        </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 hover:border-purple-500/30 transition-all">
-            <h3 class="text-base font-bold text-white mb-1">Monthly Payment Structuring</h3>
-            <div class="relative h-64 w-full chart-container-print"><canvas id="paymentChart"></canvas></div>
-            </div>
-            <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 hover:border-purple-500/30 transition-all">
-            <h3 class="text-base font-bold text-white mb-1">Interest Accumulation Contrast</h3>
-            <div class="relative h-64 w-full chart-container-print"><canvas id="interestChart"></canvas></div>
-            </div>
-        </div>
+          <div class="text-center mb-6 no-print md:block">
+              <span class="text-indigo-400 font-bold uppercase text-xs tracking-wider">Visual Performance Analytics</span>
+              <h3 class="text-2xl font-black text-white mt-1">Direct Comparative Visualizations</h3>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 hover:border-indigo-500/30 transition-all">
+              <h3 class="text-base font-bold text-white mb-1">Monthly Payment Structuring</h3>
+              <div class="relative h-64 w-full chart-container-print"><canvas id="paymentChart"></canvas></div>
+              </div>
+              <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 hover:border-indigo-500/30 transition-all">
+              <h3 class="text-base font-bold text-white mb-1">Interest Accumulation Contrast</h3>
+              <div class="relative h-64 w-full chart-container-print"><canvas id="interestChart"></canvas></div>
+              </div>
+          </div>
         </div>
 
         <div id="module-doughnut-chart" class="hidden-module mb-12 cursor-pointer">
-        <div class="text-center mb-6 no-print md:block">
-            <span class="text-cyan-400 font-bold uppercase text-xs tracking-wider">Capital Architecture</span>
-            <h3 class="text-2xl font-black text-white mt-1">Capital Slice Breakdown</h3>
+          <div class="text-center mb-6 no-print md:block">
+              <span class="text-cyan-400 font-bold uppercase text-xs tracking-wider">Capital Architecture</span>
+              <h3 class="text-2xl font-black text-white mt-1">Capital Slice Breakdown</h3>
+          </div>
+          <div class="flex justify-center">
+              <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 w-full max-w-2xl hover:border-cyan-500/30 transition-all">
+              <div class="relative h-80 w-full chart-container-print flex justify-center"><canvas id="doughnutChart"></canvas></div>
+              </div>
+          </div>
         </div>
-        <div class="flex justify-center">
-            <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 w-full max-w-2xl hover:border-cyan-500/30 transition-all">
-            <div class="relative h-80 w-full chart-container-print flex justify-center"><canvas id="doughnutChart"></canvas></div>
-            </div>
-        </div>
+
+        <!-- NEW RENTAL LONG-TERM RETURN CHART -->
+        <div id="module-rental-chart" class="hidden-module mb-12 cursor-pointer">
+          <div class="text-center mb-6 no-print md:block">
+              <span class="text-brand-emerald font-bold uppercase text-xs tracking-wider">Revenue Growth Projection</span>
+              <h3 class="text-2xl font-black text-white mt-1">Long-Term Gross Rental Income</h3>
+          </div>
+          <div class="flex justify-center">
+              <div class="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 w-full hover:border-brand-emerald/30 transition-all">
+              <div class="relative h-80 w-full chart-container-print"><canvas id="rentalChartCanvas"></canvas></div>
+              </div>
+          </div>
         </div>
     </div>
 
@@ -385,26 +426,23 @@
 
     Chart.register(ChartDataLabels);
 
+    // Number extraction for charts and math
+    const clean = (val) => parseFloat((val || '0').toString().replace(/[^0-9.-]+/g, '')) || 0;
+    const formatDollar = (num) => '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
     function sendWebhookEvent(payload) {
         if (!LOGGING_WEBHOOK_URL) return;
         fetch(LOGGING_WEBHOOK_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify(payload)
+            method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload)
         }).catch(err => console.log("Webhook Sync Error"));
     }
 
-    // Set up Session End Beacon when user closes the window or navigates away
     window.addEventListener('pagehide', () => {
         if (LOGGING_WEBHOOK_URL && currentSessionId) {
             const emailStored = sessionStorage.getItem('tchb_email_' + urlPropId) || "Unknown";
             navigator.sendBeacon(LOGGING_WEBHOOK_URL, JSON.stringify({
-                action: 'session_end', 
-                sessionId: currentSessionId, 
-                timestamp: Date.now(),
-                email: emailStored,
-                propertyId: urlPropId
+                action: 'session_end', sessionId: currentSessionId, timestamp: Date.now(),
+                email: emailStored, propertyId: urlPropId
             }));
         }
     });
@@ -432,7 +470,6 @@
                 document.getElementById('fullPageLoader').innerHTML = '<p class="text-red-400 font-bold">Error: Property Not Found In Database.</p>';
                 return;
             }
-
             checkGate();
         } catch(err) {
             document.getElementById('fullPageLoader').innerHTML = `<p class="text-red-400 font-bold">Connection Error: ${err.message}</p>`;
@@ -466,26 +503,26 @@
         const emailInput = document.getElementById('gateEmailInput').value.trim();
         const keyInput = document.getElementById('gateAccessKeyInput').value.trim();
         const btn = document.getElementById('gateAuthButton');
+        
+        currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2,7);
 
         if (gateAuthStep === 1) {
             if (!isValidEmail(emailInput)) {
                 showGateError("Please Enter A Valid Email Address.");
-                sendWebhookEvent({ action: 'failed_otp_request', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, accessKeyUsed: keyInput, status: "ERROR", reason: "Invalid Email Address Format" });
                 return;
             }
             
-            // ADMIN OVERRIDE
             if (emailInput.toLowerCase().endsWith('@totalchb.com') && keyInput === 'Portal@2026') {
                 sessionStorage.setItem('tchb_access_granted_' + urlPropId, 'true');
                 sessionStorage.setItem('tchb_email_' + urlPropId, emailInput);
-                sendWebhookEvent({ action: 'log_access', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, otpUsed: 'Admin Password Bypass', status: "SUCCESS", reason: "ADMIN ACCESS" });
+                sessionStorage.setItem('tchb_sess_' + urlPropId, currentSessionId);
+                sendWebhookEvent({ action: 'log_access', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, otpUsed: 'Admin Password Bypass', status: "SUCCESS", reason: "ADMIN ACCESS", sessionId: currentSessionId });
                 unlockPage();
                 return;
             }
 
             if (keyInput !== currentDBRow.Access_Password) {
                 showGateError("Incorrect Security Authorization Code. Please Try Again.");
-                sendWebhookEvent({ action: 'failed_otp_request', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, accessKeyUsed: keyInput, status: "ERROR", reason: "Invalid Access Key" });
                 return;
             }
 
@@ -496,14 +533,8 @@
             btn.disabled = true;
 
             sendWebhookEvent({ 
-                action: 'send_otp', 
-                timestamp: Date.now(), 
-                email: emailInput, 
-                propertyId: urlPropId,
-                accessKeyUsed: keyInput,
-                otpSent: gateExpectedOTP, 
-                status: "OTP SENT",
-                reason: "OTP Sent Successfully"
+                action: 'send_otp', timestamp: Date.now(), email: emailInput, 
+                propertyId: urlPropId, accessKeyUsed: keyInput, otpSent: gateExpectedOTP, sessionId: currentSessionId 
             });
 
             setTimeout(() => {
@@ -522,21 +553,17 @@
             
             if (userOTP !== gateExpectedOTP) {
                 showGateError("Incorrect Verification Code. Please Try Again.");
-                sendWebhookEvent({ action: 'failed_access', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, otpUsed: userOTP, status: "ERROR", reason: "Invalid Verification Code" });
+                sendWebhookEvent({ action: 'failed_access', timestamp: Date.now(), email: emailInput, propertyId: urlPropId, otpUsed: userOTP, status: "ERROR", reason: "Invalid Verification Code", sessionId: currentSessionId });
                 return;
             }
 
             sessionStorage.setItem('tchb_access_granted_' + urlPropId, 'true');
             sessionStorage.setItem('tchb_email_' + urlPropId, emailInput);
+            sessionStorage.setItem('tchb_sess_' + urlPropId, currentSessionId);
             
             sendWebhookEvent({ 
-                action: 'log_access', 
-                timestamp: Date.now(), 
-                email: emailInput, 
-                propertyId: urlPropId,
-                otpUsed: userOTP,
-                status: "SUCCESS", 
-                reason: "Access Granted" 
+                action: 'log_access', timestamp: Date.now(), email: emailInput, 
+                propertyId: urlPropId, otpUsed: userOTP, status: "SUCCESS", reason: "Access Granted", sessionId: currentSessionId
             });
 
             unlockPage();
@@ -548,19 +575,15 @@
         document.getElementById('fullPageLoader').classList.add('hidden');
         document.getElementById('mainContent').classList.remove('hidden');
 
-        // Fire Session Start Analytics
-        currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2,9);
+        currentSessionId = sessionStorage.getItem('tchb_sess_' + urlPropId);
         sendWebhookEvent({
-            action: 'session_start',
-            timestamp: Date.now(),
+            action: 'session_start', timestamp: Date.now(),
             email: sessionStorage.getItem('tchb_email_' + urlPropId) || "Unknown",
-            propertyId: urlPropId,
-            sessionId: currentSessionId
+            propertyId: urlPropId, sessionId: currentSessionId
         });
 
-        // Determine raw deal type mapped to the 3 structures
         const rawType = (currentDBRow.Deal_Type || '').toUpperCase();
-        let dealTypeMap = 'wholesale'; // default
+        let dealTypeMap = 'wholesale';
         if(rawType.includes('SUBJECT-TO') || rawType.includes('CREATIVE')) dealTypeMap = 'creative';
         else if(rawType.includes('RENTAL') || rawType.includes('TURN KEY') || rawType.includes('TURNKEY')) dealTypeMap = 'rental';
 
@@ -570,11 +593,8 @@
             dealType: dealTypeMap,
             badgeText: currentDBRow.Teaser_Heading || 'Deal Proposal',
             badgeColor: badgeStyle,
-            address: currentDBRow.Address,
-            cityState: currentDBRow.City_State,
-            pill1: currentDBRow.Pill_1,
-            pill2: currentDBRow.Pill_2,
-            pill3: currentDBRow.Pill_3,
+            address: currentDBRow.Address, cityState: currentDBRow.City_State,
+            pill1: currentDBRow.Pill_1, pill2: currentDBRow.Pill_2, pill3: currentDBRow.Pill_3,
             
             info1Label: currentDBRow.Info_1_Label, info1Value: currentDBRow.Info_1_Value, info1Desc: currentDBRow.Info_1_Desc,
             info2Label: currentDBRow.Info_2_Label, info2Value: currentDBRow.Info_2_Value, info2Desc: currentDBRow.Info_2_Desc,
@@ -587,18 +607,15 @@
             box1Title: currentDBRow.Box_1_Title, box1Desc: currentDBRow.Box_1_Desc,
             box2Title: currentDBRow.Box_2_Title, box2Desc: currentDBRow.Box_2_Desc,
 
-            // Creative mapped vars
             sub2Rate: currentDBRow.CR_Sub2_Rate, marketRate: currentDBRow.CR_Market_Rate,
             sub2PI: parseFloat(currentDBRow.CR_Sub2_PI) || 0, marketPI: parseFloat(currentDBRow.CR_Market_PI) || 0,
             escrow: parseFloat(currentDBRow.CR_Escrow) || 0, totalInterestSaved: currentDBRow.CR_Total_Interest_Saved,
             
-            // Wholesale mapped vars
             wsPurchasePrice: currentDBRow.WS_Purchase_Price, wsClosing: currentDBRow.WS_Est_Closing_Costs,
             wsRepair: currentDBRow.WS_Est_Repair_Budget, wsBasis: currentDBRow.WS_Total_Basis, 
             wsArv: currentDBRow.WS_Est_ARV, wsRealtor: currentDBRow.WS_Est_Realtor_Fees, 
             wsReturn: currentDBRow.WS_Est_Net_Return,
             
-            // Rental mapped vars
             rnPurchasePrice: currentDBRow.RN_Purchase_Price, 
             rnCurRent: currentDBRow.RN_Total_Current_Rent, rnEstRent: currentDBRow.RN_Total_Est_Rent, 
             rnOpEx: currentDBRow.RN_OpEx, rnNOI: currentDBRow.RN_NOI,
@@ -618,6 +635,13 @@
         return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
     }
 
+    // Helper to turn text into themed bullet points
+    function formatBullets(text, colorClass) {
+        if (!text || text.trim() === 'N/A' || text.trim() === '') return '<p class="text-gray-400">N/A</p>';
+        const lines = text.split('\n').filter(l => l.trim().length > 0);
+        return lines.map(l => `<div class="flex items-start gap-2 mb-1.5"><span class="${colorClass} mt-0.5">•</span><span class="text-gray-300 leading-relaxed">${l}</span></div>`).join('');
+    }
+
     function renderUniversalPage(data) {
         document.getElementById('ui-badge').className = `inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border mb-2 uppercase tracking-wide ${data.badgeColor}`;
         document.getElementById('ui-badge').innerText = data.badgeText;
@@ -635,13 +659,31 @@
         document.getElementById('ui-box-1-title').innerText = data.box1Title; document.getElementById('ui-box-1-desc').innerText = data.box1Desc;
         document.getElementById('ui-box-2-title').innerText = data.box2Title; document.getElementById('ui-box-2-desc').innerText = data.box2Desc;
 
-        // Layout switches based on Deal Type
         document.querySelectorAll('.hidden-module').forEach(el => el.classList.add('hidden-module'));
         if(currentDBRow.Status && currentDBRow.Status.toUpperCase() === 'SOLD') document.getElementById('soldOverlayBanner').classList.remove('hidden-module');
 
-        // Setup Top KPIs based on Deal Type
         if (data.dealType === 'creative') {
             document.getElementById('creative-kpis').classList.remove('hidden-module');
+            
+            // Build Dynamic Sub2 Milestones
+            const mPI = data.marketPI || 0;
+            const sPI = data.sub2PI || 0;
+            const moCF = (mPI - sPI) > 0 ? (mPI - sPI) : 0;
+            const totalInt = clean(data.totalInterestSaved);
+            const annInt = totalInt / 30; // Approx linear interest saved
+
+            const setupMilestone = (year) => {
+                const cf = formatDollar(moCF * 12 * year);
+                const int = formatDollar(annInt * year);
+                const tot = formatDollar((moCF * 12 * year) + (annInt * year));
+                document.getElementById(`ui-sub2-y${year}-cf`).innerText = cf;
+                document.getElementById(`ui-sub2-y${year}-int`).innerText = int;
+                document.getElementById(`ui-sub2-y${year}-tot`).innerText = tot;
+            };
+
+            setupMilestone(5); setupMilestone(10); setupMilestone(15); setupMilestone(30);
+            document.getElementById('creative-milestones').classList.remove('hidden-module');
+
         } else {
             document.getElementById('wholesale-kpis').classList.remove('hidden-module');
             document.getElementById('ui-ws-kpi-1-label').innerText = data.wsInfo1Label;
@@ -649,14 +691,14 @@
             if (data.wsInfo1Link && data.wsInfo1Link.trim() !== '') {
                 const wrapper = document.getElementById('ws-kpi-1-wrapper');
                 wrapper.onclick = () => window.open(data.wsInfo1Link, '_blank');
-                document.getElementById('ui-ws-kpi-1-label').innerHTML += ' <span class="text-cyan-400 text-[10px] ml-2">↗ OPEN LINK</span>';
             }
             document.getElementById('ui-ws-kpi-2-label').innerText = data.wsInfo2Label;
             document.getElementById('ui-ws-kpi-2-value').innerText = data.wsInfo2Value;
             document.getElementById('ui-ws-kpi-2-desc').innerText = data.wsInfo2Desc;
             
-            document.getElementById('ui-ws-kpi-3-specs').innerText = data.wsInfo3Specs || 'N/A';
-            document.getElementById('ui-ws-kpi-3-notes').innerText = data.wsInfo3Notes || 'N/A';
+            // Dynamic Bullet points coloring for Specs & Notes
+            document.getElementById('ui-ws-kpi-3-specs').innerHTML = formatBullets(data.wsInfo3Specs, 'text-cyan-400');
+            document.getElementById('ui-ws-kpi-3-notes').innerHTML = formatBullets(data.wsInfo3Notes, 'text-cyan-400');
         }
 
         switch (data.dealType) {
@@ -667,19 +709,19 @@
             case 'wholesale':
                 document.getElementById('module-wholesale-table').classList.remove('hidden-module');
                 document.getElementById('module-doughnut-chart').classList.remove('hidden-module');
-                renderWholesaleTable(data); renderDoughnutChart(data, 'wholesale'); break;
+                renderWholesaleTable(data); renderDoughnutChart(data); break;
             case 'rental':
                 document.getElementById('module-rental-table').classList.remove('hidden-module');
-                document.getElementById('module-doughnut-chart').classList.remove('hidden-module');
-                renderRentalTable(data); renderDoughnutChart(data, 'rental'); break;
+                document.getElementById('module-rental-chart').classList.remove('hidden-module');
+                renderRentalTable(data); renderRentalChart(data); break;
         }
     }
 
     function renderCreativeTable(data) {
         document.getElementById('ui-creative-tbody').innerHTML = `
-            <tr><td class="px-6 py-4 font-semibold text-gray-200 text-left">Interest %</td><td class="px-6 py-4 font-bold text-white bg-purple-950/10 text-lg">${data.sub2Rate}</td><td class="px-6 py-4 text-white text-lg font-medium">${data.marketRate}</td><td class="px-6 py-4 text-cyan-400 font-bold text-right">Massive Advantage</td></tr>
-            <tr class="bg-gray-950/20"><td class="px-6 py-4 font-semibold text-gray-200 text-left">Principal & Interest (P&I)</td><td class="px-6 py-4 font-bold text-white bg-purple-950/10">$${data.sub2PI.toFixed(2)}</td><td class="px-6 py-4 text-white">$${data.marketPI.toFixed(2)}</td><td class="px-6 py-4 text-cyan-400 font-semibold text-right">Lower Overhead</td></tr>
-            <tr class="bg-purple-950/20"><td class="px-6 py-4 font-bold text-white text-left">Interest Paid Over Life</td><td class="px-6 py-4 font-bold text-white bg-purple-950/10">Protected</td><td class="px-6 py-4 text-white">High Exposure</td><td class="px-6 py-4 text-cyan-400 font-extrabold text-right">+${data.totalInterestSaved} Net Savings</td></tr>
+            <tr><td class="px-6 py-4 font-semibold text-gray-200 text-left">Interest %</td><td class="px-6 py-4 font-bold text-white bg-purple-950/10 text-lg">${data.sub2Rate}</td><td class="px-6 py-4 text-white text-lg font-medium">${data.marketRate}</td><td class="px-6 py-4 text-brand-emerald font-bold text-right">Massive Advantage</td></tr>
+            <tr class="bg-gray-950/20"><td class="px-6 py-4 font-semibold text-gray-200 text-left">Principal & Interest (P&I)</td><td class="px-6 py-4 font-bold text-white bg-purple-950/10">$${data.sub2PI.toFixed(2)}</td><td class="px-6 py-4 text-white">$${data.marketPI.toFixed(2)}</td><td class="px-6 py-4 text-brand-emerald font-semibold text-right">Lower Overhead</td></tr>
+            <tr class="bg-purple-950/20"><td class="px-6 py-4 font-bold text-white text-left">Interest Paid Over Life</td><td class="px-6 py-4 font-bold text-white bg-purple-950/10">Protected</td><td class="px-6 py-4 text-white">High Exposure</td><td class="px-6 py-4 text-brand-emerald font-extrabold text-right">+${data.totalInterestSaved} Net Savings</td></tr>
         `;
     }
 
@@ -703,11 +745,11 @@
                 <td class="px-6 py-4 text-left border-l border-gray-800 pl-6 text-white font-medium">Est. Closing Costs (1-2%)</td>
                 <td class="px-6 py-4 text-right pr-6 font-bold text-white bg-gray-900/40">${data.wsClosing || '$0'}</td>
             </tr>
-            <tr class="bg-gray-950/60 border-t border-gray-700">
+            <tr class="border-t border-gray-700">
                 <td class="px-6 py-5 font-bold text-brand-crimson text-lg text-left pl-6">Total Cost Basis</td>
-                <td class="px-6 py-5 font-extrabold text-brand-crimson bg-gray-900/80 text-lg text-right">${data.wsBasis || '$0'}</td>
-                <td class="px-6 py-5 font-bold text-white border-l border-gray-800 pl-6 text-left text-lg">Est. Net Return</td>
-                <td class="px-6 py-5 font-black text-brand-emerald bg-emerald-900/20 text-xl text-right pr-6">${data.wsReturn || '$0'}</td>
+                <td class="px-6 py-5 font-extrabold text-brand-crimson bg-brand-crimson/10 text-lg text-right">${data.wsBasis || '$0'}</td>
+                <td class="px-6 py-5 font-bold text-brand-emerald border-l border-gray-800 pl-6 text-left text-lg">Est. Net Return</td>
+                <td class="px-6 py-5 font-black text-brand-emerald bg-brand-emerald/10 text-xl text-right pr-6">${data.wsReturn || '$0'}</td>
             </tr>
         `;
     }
@@ -732,16 +774,16 @@
                 <td class="px-6 py-4 text-left border-l border-gray-800 pl-6 text-white font-medium">Total Estimated Rent</td>
                 <td class="px-6 py-4 text-right pr-6 font-bold text-white bg-gray-900/40">${data.rnEstRent || '$0'}</td>
             </tr>
-            <tr class="bg-gray-950/60 border-t border-gray-700">
+            <tr class="border-t border-gray-700">
                 <td class="px-6 py-5 font-bold text-brand-crimson text-lg text-left pl-6">Total Cost Basis</td>
-                <td class="px-6 py-5 font-extrabold text-brand-crimson bg-gray-900/80 text-lg text-right">${data.wsBasis || '$0'}</td>
-                <td class="px-6 py-5 font-bold text-white border-l border-gray-800 pl-6 text-left text-lg">Estimated Gross Cap Rate</td>
-                <td class="px-6 py-5 font-black text-brand-emerald bg-emerald-900/20 text-xl text-right pr-6">${data.rnCapRate || '0%'}</td>
+                <td class="px-6 py-5 font-extrabold text-brand-crimson bg-brand-crimson/10 text-lg text-right">${data.wsBasis || '$0'}</td>
+                <td class="px-6 py-5 font-bold text-brand-emerald border-l border-gray-800 pl-6 text-left text-lg">Estimated Gross Cap Rate</td>
+                <td class="px-6 py-5 font-black text-brand-emerald bg-brand-emerald/10 text-xl text-right pr-6">${data.rnCapRate || '0%'}</td>
             </tr>
         `;
     }
 
-    let lineChart1, lineChart2, pieChart;
+    let lineChart1, lineChart2, pieChart, barChart1;
 
     function renderLineCharts(data) {
         if(lineChart1) lineChart1.destroy(); if(lineChart2) lineChart2.destroy();
@@ -750,8 +792,8 @@
         lineChart1 = new Chart(ctxPayment, {
             type: 'bar',
             data: { labels: ['Proposed Deal', "Standard Market"], datasets: [
-                { label: 'P&I', data: [data.sub2PI, data.marketPI], backgroundColor: '#a855f7' },
-                { label: 'Escrow', data: [data.escrow, data.escrow], backgroundColor: '#06b6d4' }
+                { label: 'P&I', data: [data.sub2PI, data.marketPI], backgroundColor: '#4f46e5' },
+                { label: 'Escrow', data: [data.escrow, data.escrow], backgroundColor: '#10b981' }
             ]},
             options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }
         });
@@ -761,35 +803,55 @@
         lineChart2 = new Chart(ctxInterest, {
             type: 'line',
             data: { labels: ['Year 1', 'Year 10', 'Year 20', 'Year 30'], datasets: [
-                { label: "Standard Market", data: [m1, m1*7, m1*13, m1*16], borderColor: '#fff', fill: true, backgroundColor: 'rgba(255, 255, 255, 0.1)' },
-                { label: 'Proposed Deal', data: [s1, s1*4, s1*7, s1*9], borderColor: '#06b6d4', fill: true, backgroundColor: 'rgba(6, 182, 212, 0.1)' }
+                { label: "Standard Market", data: [m1, m1*7, m1*13, m1*16], borderColor: '#dc2626', fill: true, backgroundColor: 'rgba(220, 38, 38, 0.1)' },
+                { label: 'Proposed Deal', data: [s1, s1*4, s1*7, s1*9], borderColor: '#10b981', fill: true, backgroundColor: 'rgba(16, 185, 129, 0.1)' }
             ]},
             options: { responsive: true, maintainAspectRatio: false }
         });
     }
 
-    function renderDoughnutChart(data, type) {
+    function renderDoughnutChart(data) {
         if(pieChart) pieChart.destroy();
         const ctx = document.getElementById('doughnutChart').getContext('2d');
-        let chartLabels = []; let chartData = []; let chartColors = [];
-        const clean = (val) => parseInt((val || '0').replace(/[^0-9]/g, '')) || 0;
-        
-        if (type === 'wholesale') {
-            chartLabels = ['Purchase/Basis', 'Rehab Budget', 'Est. Realtor & Closing', 'Net Return'];
-            chartData = [clean(data.wsPurchasePrice), clean(data.wsRepair), clean(data.wsRealtor) + clean(data.wsClosing), clean(data.wsReturn)];
-            chartColors = ['#06b6d4', '#f59e0b', '#dc2626', '#10b981'];
-        } else if (type === 'rental') {
-            chartLabels = ['Purchase/Basis', 'Rehab Budget', 'Est. Annual OpEx', 'Net Operating Income'];
-            chartData = [clean(data.rnPurchasePrice), clean(data.wsRepair), clean(data.rnOpEx) * 12, clean(data.rnNOI)];
-            chartColors = ['#06b6d4', '#f59e0b', '#dc2626', '#10b981'];
-        }
+        const chartLabels = ['Purchase/Basis', 'Rehab Budget', 'Est. Realtor & Closing', 'Net Return'];
+        const chartData = [clean(data.wsPurchasePrice), clean(data.wsRepair), clean(data.wsRealtor) + clean(data.wsClosing), clean(data.wsReturn)];
+        const chartColors = ['#06b6d4', '#f59e0b', '#dc2626', '#10b981'];
 
         pieChart = new Chart(ctx, {
             type: 'doughnut',
             data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: chartColors, borderWidth: 0, hoverOffset: 10 }] },
             options: {
                 responsive: true, maintainAspectRatio: false, cutout: '65%',
-                plugins: { legend: { position: 'bottom', labels: { color: '#f3f4f6' } }, datalabels: { color: '#ffffff', font: { weight: 'bold', size: 12 }, formatter: (v) => '$' + v.toLocaleString() } }
+                plugins: { legend: { position: 'bottom', labels: { color: '#f3f4f6' } }, datalabels: { color: '#ffffff', font: { weight: 'bold', size: 12 }, formatter: (v) => '$' + v.toLocaleString('en-US', {maximumFractionDigits:0}) } }
+            }
+        });
+    }
+
+    function renderRentalChart(data) {
+        if(barChart1) barChart1.destroy();
+        const ctx = document.getElementById('rentalChartCanvas').getContext('2d');
+        const annualRent = clean(data.rnEstRent) * 12;
+
+        barChart1 = new Chart(ctx, {
+            type: 'bar',
+            data: { 
+                labels: ['Year 1', 'Year 5', 'Year 15', 'Year 30'], 
+                datasets: [{ 
+                    label: 'Cumulative Gross Rent', 
+                    data: [annualRent * 1, annualRent * 5, annualRent * 15, annualRent * 30], 
+                    backgroundColor: '#10b981', borderRadius: 4 
+                }] 
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    datalabels: { align: 'end', anchor: 'end', color: '#10b981', font: { weight: 'bold', size: 11 }, formatter: (v) => '$' + v.toLocaleString('en-US', {maximumFractionDigits:0}) }
+                },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } },
+                    x: { grid: { display: false }, ticks: { color: '#9ca3af' } }
+                }
             }
         });
     }
@@ -799,12 +861,10 @@
     const ctx = canvas.getContext('2d');
     let gridSize = 55; let sparks = []; let lastSpanSpawn = 0;
     let lastInteractionTime = Date.now(); 
-    const brandColors = [{ r: 79, g: 70, b: 229 }, { r: 220, g: 38, b: 38 }, { r: 16, g: 185, b: 129 }];
+    const brandColors = [{ r: 79, g: 70, b: 229 }, { r: 220, g: 38, b: 38 }, { r: 16, g: 185, b: 129 }]; // Indigo, Red, Emerald
 
-    let customMouseX = window.innerWidth / 2;
-    let customMouseY = window.innerHeight / 2;
-    let ringX = customMouseX;
-    let ringY = customMouseY;
+    let customMouseX = window.innerWidth / 2; let customMouseY = window.innerHeight / 2;
+    let ringX = customMouseX; let ringY = customMouseY;
 
     function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resizeCanvas);
@@ -813,8 +873,7 @@
         const isHorizontal = Math.random() > 0.5;
         let startX, startY, dirX, dirY;
         if (isClick && x !== null && y !== null) {
-            startX = Math.round(x / gridSize) * gridSize;
-            startY = Math.round(y / gridSize) * gridSize;
+            startX = Math.round(x / gridSize) * gridSize; startY = Math.round(y / gridSize) * gridSize;
             dirX = isHorizontal ? (Math.random() > 0.5 ? 1 : -1) : 0; dirY = isHorizontal ? 0 : (Math.random() > 0.5 ? 1 : -1);
         } else {
             if (isHorizontal) {
@@ -832,7 +891,6 @@
     document.addEventListener('mousedown', (e) => { 
         lastInteractionTime = Date.now();
         for(let i=0; i<3; i++) createSpark(e.clientX, e.clientY, true); 
-
         const ring = document.getElementById('cursor-ring');
         if(ring) {
             ring.style.transform = `translate(-50%, -50%) scale(0.7)`;
@@ -842,35 +900,15 @@
 
     document.addEventListener('mousemove', (e) => {
         document.body.classList.add('mouse-active');
-        customMouseX = e.clientX;
-        customMouseY = e.clientY;
-
+        customMouseX = e.clientX; customMouseY = e.clientY;
         const dot = document.getElementById('cursor-dot');
         if(dot) { dot.style.left = `${customMouseX}px`; dot.style.top = `${customMouseY}px`; }
-
         const glow = document.getElementById('mouseGlow');
         if(glow) {
             glow.style.setProperty('--mouse-x', `${e.clientX}px`);
             glow.style.setProperty('--mouse-y', `${e.clientY}px`);
             if (glow.style.opacity === '0' || glow.style.opacity === '') glow.style.opacity = '1';
         }
-    });
-
-    document.addEventListener('mouseover', (e) => {
-        if (e.target.closest('.cursor-not-allowed')) {
-            document.body.classList.add('cursor-locked');
-            document.body.classList.remove('cursor-hover');
-        } else if (e.target.closest('a, button, input, [onclick], .cursor-pointer')) {
-            document.body.classList.add('cursor-hover');
-            document.body.classList.remove('cursor-locked');
-        } else {
-            document.body.classList.remove('cursor-hover', 'cursor-locked');
-        }
-    });
-
-    document.addEventListener('mouseleave', () => {
-        const glow = document.getElementById('mouseGlow');
-        if(glow) glow.style.opacity = '0';
     });
 
     function drawSparks() {
@@ -900,17 +938,14 @@
         for (let y = 0; y < canvas.height; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); }
         ctx.stroke();
 
-        ringX += (customMouseX - ringX) * 0.15;
-        ringY += (customMouseY - ringY) * 0.15;
+        ringX += (customMouseX - ringX) * 0.15; ringY += (customMouseY - ringY) * 0.15;
         const ring = document.getElementById('cursor-ring');
         if (ring) { ring.style.left = `${ringX}px`; ring.style.top = `${ringY}px`; }
 
         drawSparks();
         
         if (Date.now() - lastInteractionTime > 5000) {
-            if (timestamp - lastSpanSpawn > 500 && sparks.length < 32) { 
-                createSpark(); lastSpanSpawn = timestamp; 
-            }
+            if (timestamp - lastSpanSpawn > 500 && sparks.length < 32) { createSpark(); lastSpanSpawn = timestamp; }
         }
 
         for (let i = sparks.length - 1; i >= 0; i--) {
