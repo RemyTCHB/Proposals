@@ -362,7 +362,8 @@
                     document.getElementById('step2Container').classList.remove('hidden');
                     document.getElementById('errorMessage').classList.add('hidden');
                     btn.innerText = "Verify & Unlock Proposal";
-                    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                    // Change Button color immediately upon successful OTP generation
+                    btn.className = "w-full bg-brand-emerald hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 mt-4 cursor-pointer";
                     btn.disabled = false;
                     document.getElementById('otpInput').focus();
                 }, 500);
@@ -370,7 +371,7 @@
             } else if (authStep === 2) {
                 const userOTP = document.getElementById('otpInput').value.trim();
                 
-                if (userOTP !== expectedOTP) {
+                if (userOTP !== gateExpectedOTP) {
                     showError("Incorrect Verification Code. Please Try Again.");
                     sendWebhookEvent({ 
                         action: 'failed_access', timestamp: Date.now(), email: emailVal, 
@@ -389,7 +390,8 @@
             document.getElementById('errorMessage').classList.add('hidden');
             const lockIcon = document.getElementById('lockIcon');
             
-            sessionStorage.setItem('tchb_access_granted_' + propId, 'true');
+            // Secures against URL bypass mapping directly to the strictly allowed property ONLY
+            sessionStorage.setItem('tchb_active_property', propId);
             sessionStorage.setItem('tchb_email_' + propId, email); 
             sessionStorage.setItem('tchb_sess_' + propId, currentSessionTrackingId);
             
