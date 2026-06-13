@@ -13,7 +13,7 @@
                     colors: {
                         brand: {
                             dark: '#0b0f19', card: 'rgba(17, 24, 39, 0.75)',
-                            purple: '#4f46e5', crimson: '#dc2626', emerald: '#10b981', gold: '#f59e0b', cyan: '#06b6d4'
+                            purple: '#4f46e5', crimson: '#dc2626', emerald: '#10b981', gold: '#f59e0b'
                         }
                     }
                 }
@@ -217,7 +217,7 @@
                 return { class: 'text-purple-400 bg-purple-500/10 border-purple-500/20', bullet: 'bg-purple-500', halo: 'rgba(168,85,247,0.15)', glow: 'border-t-purple-500', btnHover: 'hover:bg-purple-600 hover:border-purple-500', label: 'SUBJECT-TO / CREATIVE' };
             }
             if (t.includes('WHOLESALE') || t.includes('FIX & FLIP') || t.includes('RENTAL') || t.includes('TURN KEY') || t.includes('TURNKEY')) {
-                return { class: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20', bullet: 'bg-cyan-500', halo: 'rgba(6,182,212,0.15)', glow: 'border-t-cyan-500', btnHover: 'hover:bg-cyan-600 hover:border-cyan-500', label: 'WHOLESALE / OFF-MARKET' };
+                return { class: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', bullet: 'bg-emerald-500', halo: 'rgba(16,185,129,0.15)', glow: 'border-t-emerald-500', btnHover: 'hover:bg-emerald-600 hover:border-emerald-500', label: 'WHOLESALE / OFF-MARKET' };
             }
             return { class: 'text-gray-400 bg-gray-500/10 border-gray-500/20', bullet: 'bg-gray-500', halo: 'rgba(156,163,175,0.15)', glow: 'border-t-gray-500', btnHover: 'hover:bg-gray-600 hover:border-gray-500', label: 'INVESTMENT DEAL' };
         }
@@ -289,7 +289,6 @@
             activePropertyId = id;
             authStep = 1;
             
-            // Generate a persistent session ID the moment the modal opens
             currentSessionTrackingId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2,7);
             
             document.getElementById('authModal').classList.remove('hidden');
@@ -336,7 +335,6 @@
                     return;
                 }
                 
-                // ADMIN OVERRIDE
                 if (emailVal.toLowerCase().endsWith('@totalchb.com') && inputVal === 'Portal@2026') {
                     grantAccess(prop.Property_ID, emailVal, 'Admin Password Bypass', 'Access Granted', true);
                     return;
@@ -354,13 +352,8 @@
                 btn.disabled = true;
 
                 sendWebhookEvent({ 
-                    action: 'send_otp', 
-                    timestamp: Date.now(), 
-                    email: emailVal, 
-                    propertyId: prop.Property_ID,
-                    accessKeyUsed: inputVal,
-                    otpSent: expectedOTP,
-                    sessionId: currentSessionTrackingId
+                    action: 'send_otp', timestamp: Date.now(), email: emailVal, 
+                    propertyId: prop.Property_ID, accessKeyUsed: inputVal, otpSent: expectedOTP, sessionId: currentSessionTrackingId 
                 });
 
                 setTimeout(() => {
@@ -416,12 +409,11 @@
             setTimeout(() => { window.location.href = `proposal.html?id=${propId}`; }, 800);
         }
 
-        // Background Animation Matrix
         const canvas = document.getElementById('gridCanvas');
         const ctx = canvas.getContext('2d');
         let gridSize = 55; let sparks = []; let lastSpanSpawn = 0;
         let lastInteractionTime = Date.now(); 
-        const brandColors = [{ r: 79, g: 70, b: 229 }, { r: 220, g: 38, b: 38 }, { r: 16, g: 185, b: 129 }]; // Indigo, Red, Emerald
+        const brandColors = [{ r: 79, g: 70, b: 229 }, { r: 220, g: 38, b: 38 }, { r: 16, g: 185, b: 129 }];
 
         let customMouseX = window.innerWidth / 2; let customMouseY = window.innerHeight / 2;
         let ringX = customMouseX; let ringY = customMouseY;
