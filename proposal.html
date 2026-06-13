@@ -622,7 +622,8 @@
         sessionStorage.setItem('tchb_email_' + propId, email); 
         sessionStorage.setItem('tchb_sess_' + propId, currentSessionId);
         
-        lockIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>';
+        // Clean un-locked padlock SVG icon
+        lockIcon.innerHTML = '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path>';
         lockIcon.className = "w-8 h-8 text-brand-emerald transition-all duration-300 scale-110";
         lockContainer.className = "mx-auto w-16 h-16 rounded-full bg-brand-emerald/10 flex items-center justify-center border border-brand-emerald/20 mb-4 animate-bounce";
 
